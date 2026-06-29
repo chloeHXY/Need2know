@@ -1,0 +1,126 @@
+% =============================================================================
+%  Figure 1 — Teaser. Three-column before/after comparison.
+%  Required preamble (in main.tex):
+%    \usepackage{tikz}
+%    \usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit,backgrounds,calc}
+%    \usepackage{xcolor}
+%    \usepackage{amsmath,amssymb}
+% =============================================================================
+
+% ---- shared color palette (also reused by fig2 / fig3) -----------------------
+\providecommand{\colE}{green!55!black}     % essential = green
+\providecommand{\colN}{red!70!black}       % non-essential = red
+\providecommand{\colTrust}{blue!55!black}  % trusted = blue
+\providecommand{\colCloud}{gray!55!black}  % untrusted = gray
+
+\providecommand{\bgE}{green!10}
+\providecommand{\bgN}{red!10}
+\providecommand{\bgOurs}{yellow!18}
+\providecommand{\bgBad}{red!8}
+\providecommand{\bgMid}{orange!10}
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+    font=\footnotesize,
+    >={Stealth[length=2.2mm]},
+    every node/.style={align=center},
+    box/.style={draw,rounded corners=2pt,inner sep=4pt,line width=0.4pt},
+    method/.style={box,minimum width=4.6cm,minimum height=1.05cm,thick},
+    verdict/.style={box,minimum width=4.6cm,minimum height=0.85cm,font=\footnotesize\bfseries},
+    rewrite/.style={box,minimum width=4.6cm,inner sep=4pt,font=\scriptsize,
+                    text width=4.4cm,align=left},
+]
+
+% ====================== top: shared annotated query ==========================
+\node[box,fill=gray!5,line width=0.5pt,
+      text width=15.6cm,inner sep=6pt,align=left,
+      label={[font=\scriptsize\bfseries,anchor=west,xshift=2pt]north west:User query $x$ (essential \textcolor{\colE}{$\mathcal{E}$}~/ non-essential \textcolor{\colN}{$\mathcal{N}$})}
+] (Q) at (0,0) {%
+\vspace{2pt}\\
+``I'm a \textcolor{\colE}{\underline{58-year-old woman}}, \textcolor{\colE}{\underline{smoker for 30 years}},
+\textcolor{\colE}{\underline{hypertensive}}, \textcolor{\colN}{\underline{living in Brooklyn with my younger sister}},
+presenting with \textcolor{\colE}{\underline{crushing substernal chest pain radiating to the left arm}}.
+Which condition is most likely?''
+};
+
+% ====================== three method columns =================================
+\def\colW{5.0cm}
+\def\xL{-5.4}  \def\xM{0.0}  \def\xR{5.4}
+\def\yMethod{-2.1}
+\def\yRewrite{-3.7}
+\def\yVerdict{-5.6}
+
+% --- method header boxes ---
+\node[method,fill=\bgBad ,below=1.2cm of Q.south,xshift=\xL cm,anchor=north]
+      (M1) {\textbf{Direct LLM}\\\scriptsize(no defense; utility ceiling)};
+\node[method,fill=\bgMid ,below=1.2cm of Q.south,xshift=\xM cm,anchor=north]
+      (M2) {\textbf{PII redactor}\\\scriptsize(Prediax-style)};
+\node[method,fill=\bgOurs,below=1.2cm of Q.south,xshift=\xR cm,anchor=north,thick,
+      draw=orange!70!black]
+      (M3) {\textbf{Ours}\\\scriptsize(\,$\mathcal{E}/\mathcal{N}$-aware RL rewriter)};
+
+% --- arrows from query into each method ---
+\draw[->,thick] (Q.south) -- ($(M1.north)+(0,0.05)$);
+\draw[->,thick] (Q.south) -- ($(M2.north)+(0,0.05)$);
+\draw[->,thick] (Q.south) -- ($(M3.north)+(0,0.05)$);
+
+% --- rewrites (what is actually sent to the remote LLM) ---
+\node[rewrite,below=0.45cm of M1,fill=white]
+  (R1) {\textit{sent to remote LLM:}\\[2pt]
+        ``\textcolor{\colE}{58F}, \textcolor{\colE}{smoker}, \textcolor{\colE}{hypertensive},
+        \textcolor{\colN}{Brooklyn, sister}, \textcolor{\colE}{crushing chest pain}\dots''};
+\node[rewrite,below=0.45cm of M2,fill=white]
+  (R2) {\textit{sent to remote LLM:}\\[2pt]
+        ``\texttt{<PERSON>}, \texttt{<LOC>}, chest pain.''\\
+        \scriptsize\textcolor{\colN}{$\Rightarrow$ smoker / hypertension still leak;}
+        \textcolor{\colE}{key clinical signals partly dropped}};
+\node[rewrite,below=0.45cm of M3,fill=white]
+  (R3) {\textit{sent to remote LLM:}\\[2pt]
+        ``\textcolor{\colE}{58F smoker hypertensive, crushing chest pain radiating
+        to left arm}.''};
+
+\draw[->] (M1.south) -- (R1.north);
+\draw[->] (M2.south) -- (R2.north);
+\draw[->] (M3.south) -- (R3.north);
+
+% --- verdict tags ---
+\node[verdict,fill=\bgBad,below=0.4cm of R1]
+  (V1) {Privacy~\textcolor{\colN}{\ding{55}}\quad Utility~\textcolor{\colE}{\ding{51}}};
+\node[verdict,fill=\bgMid,below=0.4cm of R2]
+  (V2) {Privacy~\textcolor{orange!85!black}{$\bm{\circleddash}$}\quad Utility~\textcolor{\colN}{\ding{55}}};
+\node[verdict,fill=\bgOurs,below=0.4cm of R3,thick,draw=orange!70!black]
+  (V3) {Privacy~\textcolor{\colE}{\ding{51}}\quad Utility~\textcolor{\colE}{\ding{51}}};
+
+% ====================== mini privacy/utility scatter (right) =================
+% Place a small inset on the right of the verdict row
+\begin{scope}[shift={($(V3.east)+(2.7,0.2)$)},
+              every node/.style={font=\scriptsize}]
+  % axis box
+  \draw[->,thick] (0,0) -- (2.5,0) node[below right=-1pt and -2pt]{Privacy $\rightarrow$};
+  \draw[->,thick] (0,0) -- (0,2.0) node[above left=-1pt and -2pt,rotate=90,anchor=south west]{Utility};
+  % grid
+  \draw[gray!30,dashed] (0,1.0) -- (2.5,1.0);
+  \draw[gray!30,dashed] (1.25,0) -- (1.25,2.0);
+  % points
+  \fill[red!75]    (0.45,1.65) circle (2.5pt) node[above right=-1pt]{\scriptsize Direct};
+  \fill[orange!85!black] (1.10,0.55) circle (2.5pt) node[below right=-1pt]{\scriptsize Prediax};
+  \node[star,star points=5,star point ratio=2.4,fill=orange!75!red,
+        draw=black,inner sep=1.4pt] at (2.15,1.75) {};
+  \node at (2.15,1.75) [above=2pt,font=\scriptsize\bfseries]{Ours};
+\end{scope}
+
+\end{tikzpicture}
+
+\caption{\textbf{Why $\mathcal{E}/\mathcal{N}$-aware rewriting is needed.}
+A user query routinely entangles \textcolor{\colE}{task-essential spans
+$\mathcal{E}$} (answer-bearing clinical signals) with
+\textcolor{\colN}{task-non-essential sensitive spans $\mathcal{N}$}
+(location, family). Forwarding the raw query maximises utility but
+leaks $\mathcal{N}$; PII redactors mask only canonical PII categories,
+so non-PII sensitive context still leaks while answer-decisive
+evidence is partly destroyed. Our rewriter is trained to remove
+$\mathcal{N}$ while preserving $\mathcal{E}$, occupying the
+high-utility/low-leak region of the privacy--utility plane.}
+\label{fig:teaser}
+\end{figure*}

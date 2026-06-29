@@ -1,0 +1,5 @@
+dataset,pearson_word_ratio_vs_util,pearson_word_ratio_vs_risk
+our,0.2586,0.3818
+papillon,0.1827,0.1203
+prediax,0.3869,0.0541
+PUFT,0.3149,0.19

@@ -1,0 +1,5 @@
+dataset,samples,samples_with_lost_constraint,samples_with_lost_constraint_pct,total_lost_constraint_instances,mean_lost_per_sample,max_lost_per_sample
+our,500,216,43.2,531,1.062,13
+papillon,500,285,57.0,721,1.442,10
+prediax,500,149,29.8,289,0.578,7
+PUFT,500,384,76.8,1207,2.414,16

@@ -1,0 +1,6 @@
+dataset,n_samples,n_issue_instances,direct_leak,direct_leak_sample_pct,semantic_leak,semantic_leak_sample_pct,inferential_leak,inferential_leak_sample_pct,combination_leak,combination_leak_sample_pct,any_issue_pct,multi_issue_pct
+ALL,2000,1327,874,24.65,448,11.8,5,0.25,0,0.0,30.55,6.15
+our,500,162,100,16.0,62,6.2,0,0.0,0,0.0,20.2,2.0
+papillon,500,78,26,4.6,47,6.0,5,1.0,0,0.0,10.2,1.4
+prediax,500,1022,717,72.8,305,30.8,0,0.0,0,0.0,83.6,20.0
+PUFT,500,65,31,5.2,34,4.2,0,0.0,0,0.0,8.2,1.2

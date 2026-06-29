@@ -1,0 +1,7 @@
+issue_type,n_samples_with_type,mean_utility,median_utility
+lost_constraint,1034,0.4543,0.4
+weakened_constraint,57,0.5895,0.7
+over_generalization,0,,
+task_drift,51,0.3235,0.4
+added_constraint,27,0.6444,0.7
+(no utility issue),877,1.0,1.0

@@ -1,0 +1,208 @@
+% =============================================================================
+%  Figure 3 — Method main figure. Two-panel: training (left) + inference (right).
+%  Required preamble (in main.tex):
+%    \usepackage{tikz}
+%    \usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit,backgrounds,calc,decorations.pathreplacing}
+%    \usepackage{xcolor}
+%    \usepackage{amsmath,amssymb}
+% =============================================================================
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+    font=\footnotesize,
+    >={Stealth[length=2.4mm]},
+    every node/.style={align=center},
+    pi/.style    ={draw,thick,rounded corners=3pt,fill=orange!18,
+                   minimum width=2.6cm,minimum height=0.85cm,line width=0.6pt,
+                   font=\bfseries\footnotesize},
+    box/.style   ={draw,rounded corners=2pt,inner sep=4pt,line width=0.4pt},
+    privbox/.style={draw,thick,rounded corners=3pt,fill=red!8,inner sep=5pt,
+                    text width=5.4cm,line width=0.5pt},
+    utilbox/.style={draw,thick,rounded corners=3pt,fill=green!10,inner sep=5pt,
+                    text width=5.4cm,line width=0.5pt},
+    rwd/.style   ={draw,thick,rounded corners=3pt,fill=yellow!15,inner sep=5pt,
+                   text width=5.6cm,line width=0.5pt},
+    grpo/.style  ={draw,thick,rounded corners=3pt,fill=blue!8,inner sep=5pt,
+                   text width=5.6cm,line width=0.5pt},
+    cloud/.style ={draw,thick,rounded corners=3pt,fill=gray!12,inner sep=5pt,
+                   text width=4.8cm,line width=0.5pt},
+    local/.style ={draw,thick,rounded corners=3pt,fill=blue!8,inner sep=5pt,
+                   text width=4.8cm,line width=0.5pt},
+    inp/.style   ={draw,rounded corners=2pt,inner sep=4pt,fill=white,
+                   text width=4.6cm,line width=0.4pt,font=\scriptsize},
+    label/.style ={font=\scriptsize\itshape,inner sep=1pt},
+]
+
+% =========================================================================
+%  PANEL A — TRAINING  (left half)
+% =========================================================================
+\begin{scope}[local bounding box=panelA]
+
+% Panel banner
+\node[font=\bfseries,anchor=west] at (-4.3,1.6)
+   {\textsc{Panel A.~Training}\;\;\scriptsize\normalfont (per query $x$ with annotated $\mathcal{E},\mathcal{N}$)};
+
+% Annotated query
+\node[inp,fill=gray!4] (xA) at (-1.7,0.6) {%
+Query $x$ + labels
+$\bigl(\textcolor{\colE}{\mathcal{E}}=\{e_i\},\,\textcolor{\colN}{\mathcal{N}}=\{c_j\}\bigr)$};
+
+% Rewriter (shared)
+\node[pi,below=0.45cm of xA] (piA) {$\pi_\theta$\\\scriptsize Qwen-2.5-3B};
+
+% Group of G rollouts
+\node[box,fill=orange!5,below=0.5cm of piA,minimum height=0.7cm,
+      text width=4.6cm,inner sep=4pt]
+      (G) {$G$ rollouts \;$\{y_1,y_2,\dots,y_G\}$};
+
+\draw[->,thick] (xA.south) -- (piA.north);
+\draw[->,thick] (piA.south) -- (G.north)
+       node[label,midway,right=2pt]{sample};
+
+% --- E/N RECOGNITION block (the part you specifically wanted highlighted) ---
+\node[box,below=0.7cm of G,fill=gray!3,line width=0.6pt,
+      text width=5.6cm,inner sep=5pt,
+      label={[font=\scriptsize\bfseries,xshift=2pt]north west:$\mathcal{E}/\mathcal{N}$ recognition on each $y_i$}]
+      (REC) {%
+\textbf{\textcolor{\colN}{Leak detector}} \;for each $c\in\mathcal{N}'$\,:\\[1pt]
+\hspace*{4pt}$\bigl[\,\mathrm{cov}(y_i,c)\!\ge\!1.0\;\lor\;P_{\mathrm{r}}(y_i,c)\!>\!\tau_{\text{priv}}\,\bigr]\;\Rightarrow$ leak flag\\[3pt]
+\textbf{\textcolor{\colE}{Recall scorer}} \;for each $e\in\mathcal{E}$\,:\\[1pt]
+\hspace*{4pt}$\phi(y_i,e)\in\{0,1\};\;\;\rho(y_i)=\tfrac{1}{|\mathcal{E}|}\!\sum_e\!\phi(y_i,e)$
+};
+
+\draw[->,thick] (G.south) -- (REC.north)
+        node[label,midway,right=2pt]{for each $y_i$};
+
+% --- Reward (privacy gate + utility) -------------------------------------
+\node[rwd,below=0.55cm of REC,
+      label={[font=\scriptsize\bfseries,xshift=2pt]north west:Reward $R(y_i)$}]
+      (RWD) {%
+\,\textbf{any leak?}\\[1pt]
+\hspace*{6pt}\textcolor{\colN}{$\hookrightarrow$ \textbf{yes}}: \;$R_i = -1$\;\;
+\scriptsize(hard privacy floor)\\[1pt]
+\hspace*{6pt}\textcolor{\colE}{$\hookrightarrow$ \textbf{no}}\;\,: \;$R_i = \rho(y_i)^{\gamma}\!\cdot\! L_{\text{brev}}(y_i)$\\[1pt]
+\hspace*{18pt}\scriptsize $\gamma{=}0.4$,\; $L_{\text{brev}}{=}\min(1,\alpha|x|/|y_i|),\;\alpha{=}0.5$
+};
+
+\draw[->,thick] (REC.south) -- (RWD.north);
+
+% --- GRPO update ---------------------------------------------------------
+\node[grpo,below=0.55cm of RWD,
+      label={[font=\scriptsize\bfseries,xshift=2pt]north west:GRPO update}]
+      (GRPO) {%
+$\hat{A}_i = \dfrac{R_i - \mathrm{mean}(R)}{\mathrm{std}(R)+\epsilon}$\\[3pt]
+$\mathcal{L} = -\mathbb{E}\!\Bigl[\sum_i \hat{A}_i \log \pi_\theta(y_i|x)\Bigr]
+                \,+\,\beta\,\mathrm{KL}\!\bigl(\pi_\theta\,\|\,\pi_{\text{ref}}\bigr)$
+};
+
+\draw[->,thick] (RWD.south) -- (GRPO.north);
+
+% feedback arrow: GRPO -> piA (update)
+\draw[->,thick,blue!55!black,rounded corners=8pt]
+   (GRPO.west) -- ++(-2.3,0) |- (piA.west)
+   node[label,pos=0.25,left=2pt,text=blue!55!black,rotate=90,anchor=south]{update $\pi_\theta$};
+
+\end{scope}
+
+% =========================================================================
+%  Vertical separator between Panel A and Panel B
+% =========================================================================
+\draw[gray!50,dashed,line width=0.5pt]
+     ($(panelA.north east)+(0.5,0.2)$) -- ($(panelA.south east)+(0.5,-0.2)$);
+
+% =========================================================================
+%  PANEL B — INFERENCE  (right half)
+% =========================================================================
+\begin{scope}[local bounding box=panelB,xshift=10.4cm]
+
+\node[font=\bfseries,anchor=west] at (-4.3,1.6)
+   {\textsc{Panel B.~Inference}\;\;\scriptsize\normalfont (frozen after training)};
+
+% User query (no labels at inference)
+\node[inp,fill=gray!4] (xB) at (-1.7,0.6) {User query $x$};
+
+% Rewriter (shared, frozen)
+\node[pi,below=0.45cm of xB] (piB)
+     {$\pi_\theta$\\\scriptsize Qwen-2.5-3B \;\textit{\scriptsize(frozen)}};
+
+\draw[->,thick] (xB.south) -- (piB.north);
+
+% Rewrite y
+\node[box,fill=orange!5,below=0.45cm of piB,minimum height=0.65cm,
+      text width=4.6cm,inner sep=4pt]
+      (yB) {rewritten query $y$ \;\scriptsize($\mathcal{N}$ removed, $\mathcal{E}$ kept)};
+\draw[->,thick] (piB.south) -- (yB.north)
+       node[label,midway,right=2pt]{greedy};
+
+% ---- TRUST BOUNDARY (top) ----
+\coordinate (TBT_l) at ($(yB.south west)+(-1.3,-0.35)$);
+\coordinate (TBT_r) at ($(yB.south east)+( 1.3,-0.35)$);
+\draw[red!60!black,dashed,thick] (TBT_l) -- (TBT_r);
+\node[font=\scriptsize\itshape,red!60!black,fill=white,inner sep=1pt]
+   at ($(TBT_l)!0.5!(TBT_r)+(0,0)$) {\;\;trust boundary (device $\,\to\,$ cloud)\;\;};
+
+% Cloud / remote LLM
+\node[cloud,below=0.7cm of yB] (cloud)
+     {\textbf{Remote LLM}\\\scriptsize untrusted (e.g.\ GPT-4o)\\\scriptsize answers based on $y$};
+
+\draw[->,thick] (yB.south) -- (cloud.north)
+       node[label,midway,right=2pt]{send $y$};
+
+% Returned info / draft
+\node[box,fill=gray!4,below=0.45cm of cloud,minimum height=0.65cm,
+      text width=4.6cm,inner sep=4pt]
+      (info) {retrieved info / draft answer};
+\draw[->,thick] (cloud.south) -- (info.north);
+
+% ---- TRUST BOUNDARY (bottom) ----
+\coordinate (TBB_l) at ($(info.south west)+(-1.3,-0.35)$);
+\coordinate (TBB_r) at ($(info.south east)+( 1.3,-0.35)$);
+\draw[red!60!black,dashed,thick] (TBB_l) -- (TBB_r);
+\node[font=\scriptsize\itshape,red!60!black,fill=white,inner sep=1pt]
+   at ($(TBB_l)!0.5!(TBB_r)+(0,0)$) {\;\;trust boundary (cloud $\,\to\,$ device)\;\;};
+
+% Local aggregator
+\node[local,below=0.7cm of info] (loc)
+     {\textbf{Local aggregator}\\\scriptsize trusted, frozen
+      (Qwen-7B / Llama-8B)\\\scriptsize recombines $(x,\text{info})$};
+\draw[->,thick] (info.south) -- (loc.north);
+
+% Original x routed back to local (skip cloud)
+\draw[->,thick,blue!55!black,rounded corners=8pt]
+   (xB.east) -- ++(1.5,0) |- (loc.east)
+   node[label,pos=0.20,right=2pt,text=blue!55!black,rotate=-90,anchor=north]
+   {original $x$ stays on device};
+
+% Final answer
+\node[box,fill=green!8,below=0.5cm of loc,minimum height=0.65cm,
+      text width=4.6cm,inner sep=4pt,thick]
+      (ans) {\textbf{Final answer}};
+\draw[->,thick] (loc.south) -- (ans.north);
+
+\end{scope}
+
+% =========================================================================
+%  Cross-panel link: shared rewriter
+% =========================================================================
+\draw[<->,dashed,thick,orange!75!black]
+     (piA.east) to[bend left=10] node[above,font=\scriptsize\itshape,text=orange!70!black]{shared / frozen at inference} (piB.west);
+
+\end{tikzpicture}
+
+\caption{\textbf{Method overview.}
+\textbf{(A) Training.} For each query $x$ with annotated
+$(\textcolor{\colE}{\mathcal{E}},\textcolor{\colN}{\mathcal{N}})$,
+$\pi_\theta$ produces $G$ rollouts; an $\mathcal{E}/\mathcal{N}$
+recogniser computes a leak flag (token-coverage $\lor$ BERT precision)
+and an essential-recall $\rho$. The reward treats privacy as a
+\emph{hard floor} ($R{=}{-1}$ on any leak) and otherwise grades the
+rollout by $\rho^{\gamma}\!\cdot\!L_{\text{brev}}$; GRPO uses the
+group-relative advantage to update $\pi_\theta$.
+\textbf{(B) Inference.} The same frozen $\pi_\theta$ rewrites
+$x\!\to\!y$ on-device; only $y$ crosses the trust boundary to the
+remote LLM, whose retrieved evidence is recombined with the
+on-device-retained original $x$ by a frozen local aggregator to
+produce the final answer.}
+\label{fig:method}
+\end{figure*}

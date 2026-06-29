@@ -1,0 +1,5 @@
+dataset,n,q_chars_mean,q_words_mean,rewrite_chars_mean,rewrite_words_mean,char_ratio_mean,char_ratio_median,word_ratio_mean,word_ratio_median,rewrites_shorter_than_50pct,rewrites_shorter_than_30pct
+our,500,541.05,94.95,201.67,33.79,0.421,0.376,0.403,0.359,376,168
+papillon,500,541.05,94.95,288.93,45.32,0.635,0.556,0.563,0.507,245,90
+prediax,500,541.05,94.95,543.98,91.69,1.008,1.004,0.964,0.97,0,0
+PUFT,500,541.05,94.95,144.28,25.04,0.294,0.252,0.295,0.251,425,293

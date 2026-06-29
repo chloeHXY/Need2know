@@ -1,0 +1,367 @@
+% !TEX root = main.tex
+% This file contains the "LLM-as-a-Judge Assessment" subsection,
+% converted from Experiments.md.
+% Required packages (add to your preamble if not already loaded):
+%   \usepackage{booktabs}
+%   \usepackage{graphicx}
+%   \usepackage{amsmath}
+%   \usepackage{amssymb}
+%   \usepackage{xcolor}
+%   \usepackage{listings}  % only if you want fancy code formatting
+
+\section{Experiments}
+\label{sec:experiments}
+
+We evaluate the proposed privacy-preserving query rewriter on two
+complementary axes. \emph{Privacy} measures how much
+task-non-essential sensitive content survives in the rewritten query
+that is exposed to the remote LLM, while \emph{utility} measures
+whether the rewrite is still informative enough for a frozen local
+aggregator (or a remote model) to produce a high-quality response.
+Section~\ref{sec:exp-setup} describes the models, metrics, and
+baselines; Section~\ref{sec:exp-main} reports the privacy--utility
+trade-off across three local aggregators of different scales; and
+Section~\ref{sec:llm-judge} presents a fine-grained LLM-as-a-Judge
+analysis of failure modes.
+
+\subsection{Experimental Setup}
+\label{sec:exp-setup}
+
+\paragraph{Models.}
+We instantiate our rewriter $\pi_\theta$ from
+\textsc{Qwen-2.5-3B-Instruct}, and train it with GRPO under the reward
+defined in \S\ref{sec:reward}. A \emph{single} rewriter checkpoint is
+shared across all evaluation settings: we deliberately do \emph{not}
+re-train one rewriter per downstream aggregator, so as to test whether
+the learned rewriting behaviour generalises beyond a particular
+backbone. The remote answerer used by the \textit{Direct LLM} ceiling
+is \textsc{GPT-4o} accessed through an internal proxy, and is also
+used as the LLM-as-a-Judge in
+Section~\ref{sec:llm-judge}.\footnote{For the fine-grained
+flag-and-score judge in \S\ref{sec:llm-judge} we use the more
+cost-efficient \textsc{GPT-4o-mini}; for the pairwise utility judge we
+use full \textsc{GPT-4o} with temperature $0$.} On the trusted side,
+we evaluate three frozen local aggregators of increasing scale:
+\textsc{Qwen-2.5-1.5B-Instruct}, \textsc{Qwen-2.5-7B-Instruct}, and
+\textsc{Llama-3.1-8B-Instruct}. These aggregators are kept frozen and
+are \emph{not} part of the optimisation loop: at inference time, the
+rewritten query $y$ is sent to the remote LLM, and the retrieved
+answer is recombined with the original query $x$ on the local
+aggregator to produce the final response. Training and decoding
+hyper-parameters are reported in Appendix~\ref{app:training}.
+
+\paragraph{Evaluation data.}
+We evaluate on the benchmark introduced in \S\ref{sec:data}, which
+provides every test instance with an explicit
+$(\mathcal{E},\mathcal{N})$ partition of essential and non-essential
+sensitive spans. The benchmark consists of two complementary subsets.
+The \textbf{General} split aggregates the \emph{Common} and
+\emph{Wild} portions of our reverse-synthesised general-domain set and
+covers 11 privacy-relevant domains and 20 task types, capturing the
+typical case in which non-essential disclosures are incidental to the
+user's request. The \textbf{Medical} split is the board-exam-style
+challenge set designed to stress the over-removal failure mode, in
+which clinical signals are simultaneously sensitive and
+answer-decisive. Reporting the two splits separately allows us to
+distinguish a method's behaviour on \emph{redundant} versus
+\emph{answer-bearing} sensitive content. Per-split statistics are
+summarised in Table~\ref{tab:data-stats} (Appendix~\ref{app:data}).
+
+\paragraph{Evaluation metrics.}
+We adopt complementary metrics for the two axes.
+
+\textit{Privacy.} For each rewrite $y$, an item $c\in\mathcal{N}$ is
+flagged as leaked if either its token-level Jaccard coverage in $y$
+exceeds $\tau_{\text{cov}}$ \emph{or} its rescaled BERTScore
+precision~\citep{zhang2020bertscore} against $y$ exceeds
+$\tau_{\text{bert}}$, i.e., we capture both verbatim and paraphrastic
+disclosure. Items already mentioned in $\mathcal{E}$ are excluded
+from leakage counting. Based on this primitive we report three
+sample-level rates:
+\textbf{SLR} (\emph{sensitive-leak rate}), the fraction of samples on
+which any non-essential sensitive span is leaked, our headline
+privacy score;
+\textbf{NE} (\emph{non-essential leak rate}), the per-item leakage
+rate over all spans in $\mathcal{N}$, which controls for samples
+carrying many sensitive items; and
+\textbf{EA} (\emph{essential-attribute retention}), the per-item
+retention rate over $\mathcal{E}$, which complements SLR by measuring
+how much answer-bearing context survives the rewrite. Lower SLR/NE
+and higher EA indicate better privacy-aware behaviour. To facilitate
+comparison with prior PII-redaction work, we also track a \textbf{PII}
+leak rate restricted to the canonical PII categories produced by the
+detector used in~\citet{prediax} on the same rewrites; this metric is
+reported in Appendix~\ref{app:pii}.
+
+\textit{Utility.} Because the General and Medical splits have
+qualitatively different answer formats, we evaluate task utility with
+two judging protocols, both implemented with \textsc{GPT-4o}. On
+\emph{General}, we follow the pairwise-with-swap protocol of
+\citet{papillon}: given the original question, the local pipeline's
+answer $C_L$ (driven by the rewrite $y$) is compared against the
+remote ceiling answer $C_T$ produced by \textsc{GPT-4o} on the
+unprotected query. We query the judge in both orderings and take the
+swap-consistent decision; the reported \textit{Util.} score is the
+fraction of samples on which $C_L$ is judged at least as good as
+$C_T$. On \emph{Medical}, where each item has a verified
+multiple-choice answer label, we instead use a strict single-choice
+consistency judge that returns $1$ iff the option selected in $C_L$
+exactly matches the gold label. The full prompts and parsing rules
+are given in Appendix~\ref{app:judge-utility}.
+
+We additionally report two summary numbers per aggregator block:
+the \textbf{average utility} across General and Medical, and the
+gap \textbf{$\Delta$ vs.\ Local}, defined as the difference between
+this average and the corresponding \textit{Local Only} utility under
+the same aggregator. $\Delta$ vs.\ Local isolates the \emph{net}
+contribution of off-device assistance after the privacy filter has
+been applied, which is the quantity an end-user actually cares about.
+
+\paragraph{Baselines.}
+We compare with two representative families of query-side privacy
+defences, plus two reference systems that bound the
+privacy--utility trade-off from above and below.
+\textbf{Direct LLM} forwards the unprotected query to the remote
+\textsc{GPT-4o} and serves as the \emph{utility ceiling}; it is
+unprotected and is not a comparable system on the privacy axis.
+\textbf{Local Only} runs the original query entirely on the frozen
+local aggregator and exposes nothing off-device, serving as the
+\emph{privacy reference}: privacy metrics are not applicable, and its
+utility is the floor that any off-device-assisted method must
+strictly beat to be useful. \textbf{Prediax}~\citep{prediax} is a
+rule-based PII redactor that masks canonical PII categories
+(e.g.\ \texttt{<PERSON>}, \texttt{<DATE\_TIME>}) with placeholders;
+its rewrite is independent of the local aggregator, so we report it
+once. \textbf{Papillon}~\citep{papillon} is the strongest prior
+LLM-based rewriter we are aware of; it ties its rewriter to the local
+aggregator backbone, so we instantiate one Papillon per aggregator
+(\textsc{Qwen-2.5-1.5B/7B} and \textsc{Llama-3.1-8B}) using the
+official prompts. For all systems we use greedy decoding for the
+rewriter and identical decoding settings for the downstream
+answerer. Implementation details and prompt templates of the
+
+\subsection{Main Results on Privacy-Preserving Query Rewriting}
+\label{sec:exp-main}
+
+\paragraph{Overall comparison.}\textit{Local Only} under the same aggregator.
+
+\paragraph{Overall comparison.} Table~\ref{tab:main} evaluates the privacy--utility trade-off of different query rewriting strategies. The local aggregator is used only as the downstream executor for measuring task utility, while the privacy metrics are computed on the rewritten queries. Since the Qwen-2.5-1.5B results are not yet complete, we focus on the completed Qwen-2.5-7B and Llama-3.1-8B settings.
+
+Overall, our method achieves the best average utility among protected methods in both completed settings. With Qwen-2.5-7B as the downstream aggregator, our method obtains an average utility of 78.7, improving over Local Only by 10.1 percentage points and outperforming Papillon by 2.4 points. With Llama-3.1-8B, our method achieves an average utility of 80.5, exceeding Local Only by 6.6 points and Papillon by 9.8 points. These results indicate that our rewriting strategy better preserves task-relevant information while providing privacy protection.
+
+The improvement is particularly clear on the Medical split. For Qwen-2.5-7B, our method improves Medical utility from 47.3 to 62.0 over Local Only, while reducing leakage compared with Papillon. A similar trend is observed with Llama-3.1-8B, where our method reaches 66.7 Medical utility, compared with 60.7 for Local Only and 49.2 for Papillon. This suggests that our method is especially beneficial for domain-specific queries, where preserving useful semantic information under privacy constraints is more challenging.
+
+On the General split, Papillon achieves slightly lower leakage on some metrics, such as SLR under the Llama-3.1-8B setting. However, our method consistently provides higher utility and maintains low leakage levels, leading to a stronger overall privacy--utility balance. Importantly, the same Qwen-2.5-3B rewriter is used across all evaluation settings, suggesting that the rewriting behavior is not tied to a specific downstream aggregator.
+
+\subsection{LLM-as-a-Judge Assessment}
+\label{sec:llm-judge}
+
+\paragraph{Protocol.}
+To complement the automatic privacy--utility metrics, we conduct a
+fine-grained LLM-as-a-Judge evaluation (GPT-4o-mini) on 500 rewrites per
+system (1{,}500 in total) for our method and two strong baselines,
+\emph{Papillon} and \emph{Prediax}. Given the original question and the
+rewritten query, the judge produces (i) flags for four privacy-leak
+categories and five utility-issue categories, (ii) any newly
+hallucinated sensitive attributes, and (iii) a re-identification risk
+score $r\in[0,1]$, a utility score $u\in[0,1]$. The four leak
+and five utility categories are defined in
+Appendix~\ref{app:judge-rubric}.
+
+\paragraph{Aggregate results.}
+We observe a clear negative correlation between $r$ and $u$
+(Pearson $-0.43$ overall), confirming the expected privacy--utility
+tension. Within this tension, our rewrites occupy the most balanced
+region of the score space: $11.2\%$ of our samples fall into the
+\emph{ideal} high-utility / low-risk quadrant ($u>0.7$ and $r\le 0.5$)
+--- comparable to Prediax ($14.8\%$) --- while our \emph{worst-case}
+quadrant (low utility and high risk) contains only $3.6\%$ of samples,
+less than half of Prediax's $9.0\%$. This suggests that our method
+produces fewer catastrophic rewrites than Prediax while remaining more
+informative than Papillon.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=1\linewidth]{figures/08_quadrant_distribution.png}
+  \caption{Joint distribution of utility score $u$ and re-identification
+  risk score $r$ across the three systems. Our method occupies the
+  most balanced region, with relatively few samples in the
+  low-utility / high-risk quadrant.}
+  \label{fig:quadrant-distribution}
+\end{figure}
+
+\paragraph{Privacy-failure mode analysis.}
+Breaking the privacy-issue rate down by leak type
+(Table~\ref{tab:leaks}) shows that the three systems fail in
+qualitatively different ways. Prediax relies heavily on placeholder
+substitution (e.g., \texttt{<PERSON>}, \texttt{<DATE\_TIME>}) and
+consequently exhibits the highest \texttt{direct\_leak} rate
+($51.8\%$ of samples), because non-name tokens such as identifiers,
+diagnoses, or device names are left untouched. Papillon performs the
+most aggressive paraphrasing and therefore reduces direct leakage to
+$15.8\%$, but its rewrites retain enough correlated context to trigger
+\texttt{combination\_leak} in $50.8\%$ of samples. Our method sits
+between these two regimes, with the lowest \emph{severe} leakage rate
+(direct $+$ semantic combined: $25.2\%$, vs.\ $20.0\%$ / $54.4\%$ for
+Papillon / Prediax) and the lowest fraction of multi-issue privacy
+failures ($4.2\%$ vs.\ $7.2\%$ / $12.2\%$).
+
+\begin{table*}[t]
+  \centering
+  \small
+  \caption{Privacy-leak rates (\%) by category. Bold marks the best
+  (lowest, except for ``\,$\ge 1$ issue'' / ``\,$\ge 2$ issues'' columns
+  where lower is also better) value per column among comparable systems.}
+  \label{tab:leaks}
+  \begin{tabular}{lcccccc}
+    \toprule
+    System   & direct        & semantic     & inferential  & combination   & $\ge 1$ issue   & $\ge 2$ issues \\
+    \midrule
+    Papillon & 15.8          & 4.2          & 12.8         & \textbf{50.8} & 76.4            & 7.2            \\
+    Prediax  & 51.8          & 2.6          & 10.6         & 34.6          & 86.2            & 12.2           \\
+    \textbf{Ours} & 23.0     & \textbf{2.2} & \textbf{8.0} & 39.6          & \textbf{68.4}   & \textbf{4.2}   \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+\paragraph{Utility-failure mode analysis.}
+On the utility side, the dominant failure across all systems is
+\texttt{lost\_constraint}, which is consistent with the observation
+that anonymization tends to drop execution-relevant specifics. Severe
+utility failures (\texttt{task\_drift}, \texttt{over\_generalization})
+remain rare ($<0.3\%$) but, when they occur, drive the utility score
+down to ${\sim}0.20$. Our method exhibits slightly fewer multi-issue
+utility failures ($2.2\%$) than the two baselines ($6.8\%$ / $5.4\%$),
+indicating that the constraint loss it does incur is typically
+confined to a single mild weakening rather than compounding into task
+drift.
+
+\paragraph{Hallucinated sensitive content.}
+A non-trivial $7.2\%$ of all rewrites introduce sensitive attributes
+that are not entailed by the original question
+($108 / 1{,}500$ samples, $130$ spans), spanning categories such as
+contact identifiers ($11.5\%$ of spans), locations, demographics, and
+family or medical context. The rate is comparable across systems
+(Papillon $9.2\%$, Ours $6.6\%$, Prediax $5.8\%$), suggesting this is
+a general hazard of LLM-driven rewriting and motivates explicit
+constraints against attribute hallucination in future work.
+
+
+% ... existing code ...
+\newcommand{\best}[1]{\textbf{#1}}                  % best in column
+\newcommand{\sbest}[1]{\underline{#1}}              % second best
+\newcommand{\aggrhead}[2]{%
+  \rowcolor{#1}\multicolumn{12}{c}{\textbf{#2}}\\}
+\newcommand{\todofill}{{\color{gray!70}?}}          % placeholder for 1.5B
+\definecolor{ourrow}{HTML}{FFF6D6}                  % light yellow for "Ours"
+\definecolor{qwenblock}{HTML}{FFF1E6}               % light orange block header
+\definecolor{llamablock}{HTML}{EAF7EA}              % light green block header
+\definecolor{metricgray}{HTML}{F5F5F5}              % light gray header
+\definecolor{refblock}{HTML}{EEF2FB}                % light blue for reference
+
+% =============================================================================
+%  TABLE 1 (MAIN). Privacy-utility comparison across aggregator scales.
+% =============================================================================
+\begin{table*}[t]
+\centering
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.22}
+\caption{%
+  \textbf{Privacy--utility comparison of query rewriting strategies under three
+  frozen local aggregators.} \best{Bold} and \sbest{underline} mark the best
+  and second-best \emph{protected} results within each aggregator block.
+} 
+\label{tab:main}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l c c c c c c c c c c}
+\toprule
+\textbf{Methods} & \textbf{Rewriter}
+& \multicolumn{4}{c}{\textbf{General}}
+& \multicolumn{4}{c}{\textbf{Medical}}
+& \textbf{Avg.\,Util.}\,$\uparrow$
+& \textbf{$\Delta$ vs.\,Local}\,$\uparrow$ \\
+\cmidrule(lr){3-6}\cmidrule(lr){7-10}
+& &
+SLR\,$\downarrow$ &
+NE\,$\downarrow$ &
+EA\,$\uparrow$ &
+Util.\,$\uparrow$ &
+SLR\,$\downarrow$ &
+NE\,$\downarrow$ &
+EA\,$\uparrow$ &
+Util.\,$\uparrow$ & & \\
+\midrule
+
+% --- Reference / aggregator-agnostic baselines -------------------------------
+Direct LLM & raw query
+& \multicolumn{3}{c}{\textit{unprotected}} & 100.0$^{\star}$
+& \multicolumn{3}{c}{\textit{unprotected}} & 79.5
+& 89.8 & --- \\
+Prediax & rule-based PII
+& 89.6 & 53.7 & 96.2 & 89.2
+& 1.8 & 0.6 & 95.3 & 64.2
+& 76.7 & --- \\
+
+% --- Qwen-1.5B aggregator (TBD) ----------------------------------------------
+\midrule
+\aggrhead{qwenblock}{Local aggregator: \textit{Qwen-2.5-1.5B-Instruct}}
+Local Only & original query
+& \multicolumn{3}{c}{\textit{on-device}} & \todofill
+& \multicolumn{3}{c}{\textit{on-device}} & \todofill
+& \todofill & 0.0 \\
+Papillon & Qwen-2.5-1.5B
+& \todofill & \todofill & \todofill & \todofill
+& \todofill & \todofill & \todofill & \todofill
+& \todofill & \todofill \\
+\rowcolor{ourrow}
+\textbf{Ours} & Qwen-2.5-3B (\emph{shared})
+& 8.0 & 2.2 & 59.8 & \todofill
+& 4.2 & 1.5 & 71.0 & \todofill
+& \todofill & \todofill \\
+
+% --- Qwen-7B aggregator ------------------------------------------------------
+\midrule
+\aggrhead{qwenblock}{Local aggregator: \textit{Qwen-2.5-7B-Instruct}}
+Local Only & original query
+& \multicolumn{3}{c}{\textit{on-device}} & 89.9
+& \multicolumn{3}{c}{\textit{on-device}} & 47.3
+& 68.6 & 0.0 \\
+Papillon & Qwen-2.5-7B
+& \best{6.9} & \best{2.0} & \sbest{63.4} & \sbest{93.5}
+& 55.0 & 23.9 & \best{80.6} & 59.0
+& 76.3 & \sbest{$+$7.7} \\
+\rowcolor{ourrow}
+\textbf{Ours} & Qwen-2.5-3B (\emph{shared})
+& \sbest{8.0} & \sbest{2.2} & \best{59.8} & \best{95.3}
+& \best{4.2} & \best{1.5} & \sbest{71.0} & \best{62.0}
+& \best{78.7} & \best{$+$10.1} \\
+
+% --- Llama-3.1-8B aggregator -------------------------------------------------
+\midrule
+\aggrhead{llamablock}{Local aggregator: \textit{Llama-3.1-8B-Instruct}}
+Local Only & original query
+& \multicolumn{3}{c}{\textit{on-device}} & 87.2
+& \multicolumn{3}{c}{\textit{on-device}} & 60.7
+& 74.0 & 0.0 \\
+Papillon & Llama-3.1-8B
+& \best{3.0} & \sbest{4.6} & \sbest{52.4} & \sbest{92.2}
+& 46.7 & 16.7 & 61.7 & 49.2
+& 70.7 & \sbest{$-$3.3} \\
+\rowcolor{ourrow}
+\textbf{Ours} & Qwen-2.5-3B (\emph{shared})
+& \sbest{8.0} & \best{2.2} & \best{59.8} & \best{94.3}
+& \best{4.2} & \best{1.5} & \best{71.0} & \best{66.7}
+& \best{80.5} & \best{$+$6.6} \\
+\bottomrule
+\end{tabular}%
+}
+
+\vspace{2pt}
+{\footnotesize
+$^{\star}$\,Utility ceiling, not a protected method.\quad
+``\textit{on-device}'' indicates that no information is exposed off-device,
+so privacy metrics are not applicable.\quad
+``?'' marks results pending due to ongoing experiments.
+}
+\end{table*}

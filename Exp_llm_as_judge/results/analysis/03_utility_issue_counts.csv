@@ -1,0 +1,6 @@
+dataset,n_samples,n_issue_instances,lost_constraint,lost_constraint_sample_pct,weakened_constraint,weakened_constraint_sample_pct,over_generalization,over_generalization_sample_pct,task_drift,task_drift_sample_pct,added_constraint,added_constraint_sample_pct,any_issue_pct,multi_issue_pct
+ALL,2000,2920,2748,51.7,78,2.85,0,0.0,64,2.55,30,1.35,56.15,2.3
+our,500,551,531,43.2,9,1.4,0,0.0,5,0.8,6,1.2,45.2,1.4
+papillon,500,758,721,57.0,36,5.2,0,0.0,0,0.0,1,0.2,58.6,3.8
+prediax,500,370,289,29.8,18,2.4,0,0.0,41,7.0,22,3.8,41.4,1.6
+PUFT,500,1241,1207,76.8,15,2.4,0,0.0,18,2.4,1,0.2,79.4,2.4

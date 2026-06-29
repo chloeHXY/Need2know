@@ -1,0 +1,135 @@
+% ... existing code ...
+\newcommand{\best}[1]{\textbf{#1}}                  % best in column
+\newcommand{\sbest}[1]{\underline{#1}}              % second best
+\newcommand{\aggrhead}[2]{%
+  \rowcolor{#1}\multicolumn{12}{c}{\textbf{#2}}\\}
+\newcommand{\todofill}{{\color{gray!70}?}}          % placeholder for 1.5B
+\definecolor{ourrow}{HTML}{FFF6D6}                  % light yellow for "Ours"
+\definecolor{qwenblock}{HTML}{FFF1E6}               % light orange block header
+\definecolor{llamablock}{HTML}{EAF7EA}              % light green block header
+\definecolor{metricgray}{HTML}{F5F5F5}              % light gray header
+\definecolor{refblock}{HTML}{EEF2FB}                % light blue for reference
+
+% =============================================================================
+%  TABLE 1 (MAIN). Privacy-utility comparison across aggregator scales.
+% =============================================================================
+\begin{table*}[t]
+\centering
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.22}
+\caption{%
+  \textbf{Privacy--utility comparison after merging Common and Wild into General.}
+  Rows are grouped by the frozen local aggregator; the aggregator name is given
+  in each panel header so we drop the redundant column. \textit{General} unions
+  the Common and Wild open-domain splits; \textit{Medical} is reported separately.
+  Privacy metrics are measured on the rewriter output, while utility is measured
+  after aggregation. All numeric scores are reported as percentages, and
+  $\Delta$ values are percentage-point gaps relative to \textit{Local Only}.
+  \emph{Direct LLM}, \emph{PII Only} (Prediax), and \emph{Local Only} are
+  aggregator-agnostic or privacy-trivial baselines. For \textbf{Ours}, one
+  fine-tuned Qwen-2.5-3B-Instruct rewriter is shared across all aggregators; for
+  \textbf{Papillon}, the rewriter is tied to the aggregator backbone.
+  \best{Bold} and \sbest{underline} mark the best and second-best
+  \emph{protected} results within each aggregator block.
+}
+\label{tab:main}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l c c c c c c c c c c}
+\toprule
+\textbf{Methods} & \textbf{Rewriter}
+& \multicolumn{4}{c}{\textbf{General}}
+& \multicolumn{4}{c}{\textbf{Medical}}
+& \textbf{Avg.\,Util.}\,$\uparrow$
+& \textbf{$\Delta$ vs.\,Local}\,$\uparrow$ \\
+\cmidrule(lr){3-6}\cmidrule(lr){7-10}
+& &
+SLR\,$\downarrow$ &
+NE\,$\downarrow$ &
+EA\,$\uparrow$ &
+Util.\,$\uparrow$ &
+SLR\,$\downarrow$ &
+NE\,$\downarrow$ &
+EA\,$\uparrow$ &
+Util.\,$\uparrow$ & & \\
+\midrule
+
+% --- Reference / aggregator-agnostic baselines -------------------------------
+Direct LLM & raw query
+& \multicolumn{3}{c}{\textit{unprotected}} & 100.0$^{\star}$
+& \multicolumn{3}{c}{\textit{unprotected}} & 79.5
+& 89.8 & --- \\
+PII Only (Prediax) & rule-based PII
+& 89.6 & 53.7 & 96.2 & 89.2
+& 1.8 & 0.6 & 95.3 & 64.2
+& 76.7 & --- \\
+
+% --- Qwen-1.5B aggregator (TBD) ----------------------------------------------
+\midrule
+\aggrhead{qwenblock}{Local aggregator: \textit{Qwen-2.5-1.5B-Instruct}}
+Local Only & original query
+& \multicolumn{3}{c}{\textit{on-device}} & \todofill
+& \multicolumn{3}{c}{\textit{on-device}} & \todofill
+& \todofill & 0.0 \\
+Papillon & Qwen-2.5-1.5B
+& \todofill & \todofill & \todofill & \todofill
+& \todofill & \todofill & \todofill & \todofill
+& \todofill & \todofill \\
+\rowcolor{ourrow}
+\textbf{Ours} & Qwen-2.5-3B (\emph{shared})
+& 8.0 & 2.2 & 59.8 & \todofill
+& 4.2 & 1.5 & 71.0 & \todofill
+& \todofill & \todofill \\
+
+% --- Qwen-7B aggregator ------------------------------------------------------
+\midrule
+\aggrhead{qwenblock}{Local aggregator: \textit{Qwen-2.5-7B-Instruct}}
+Local Only & original query
+& \multicolumn{3}{c}{\textit{on-device}} & 89.9
+& \multicolumn{3}{c}{\textit{on-device}} & 47.3
+& 68.6 & 0.0 \\
+Papillon & Qwen-2.5-7B
+& \best{6.9} & \best{2.0} & \sbest{63.4} & \sbest{93.5}
+& 55.0 & 23.9 & \best{80.6} & 59.0
+& 76.3 & \sbest{$+$7.7} \\
+\rowcolor{ourrow}
+\textbf{Ours} & Qwen-2.5-3B (\emph{shared})
+& \sbest{8.0} & \sbest{2.2} & \best{59.8} & \best{95.3}
+& \best{4.2} & \best{1.5} & \sbest{71.0} & \best{62.0}
+& \best{78.7} & \best{$+$10.1} \\
+
+% --- Llama-3.1-8B aggregator -------------------------------------------------
+\midrule
+\aggrhead{llamablock}{Local aggregator: \textit{Llama-3.1-8B-Instruct}}
+Local Only & original query
+& \multicolumn{3}{c}{\textit{on-device}} & 87.2
+& \multicolumn{3}{c}{\textit{on-device}} & 60.7
+& 74.0 & 0.0 \\
+Papillon & Llama-3.1-8B
+& \best{3.0} & \sbest{4.6} & \sbest{52.4} & \sbest{92.2}
+& 46.7 & 16.7 & 61.7 & 49.2
+& 70.7 & \sbest{$-$3.3} \\
+\rowcolor{ourrow}
+\textbf{Ours} & Qwen-2.5-3B (\emph{shared})
+& \sbest{8.0} & \best{2.2} & \best{59.8} & \best{94.3}
+& \best{4.2} & \best{1.5} & \best{71.0} & \best{66.7}
+& \best{80.5} & \best{$+$6.6} \\
+\bottomrule
+\end{tabular}%
+}
+
+\vspace{2pt}
+{\footnotesize
+$^{\star}$\,\textit{Direct LLM} sends the unprotected query to a remote API and
+serves as the utility ceiling, not a protected method.
+\textit{PII Only} (Prediax) only redacts named entities and is therefore
+aggregator-agnostic, so we report it once.
+\textit{Local Only} runs the original query on the local aggregator without any
+rewriter, exposing no information off-device; therefore, its privacy columns are
+collapsed as \textit{on-device} instead of repeated not-applicable dashes. It
+also defines the utility reference (\,$\Delta$=0\,) for the ``$\Delta$ vs.\ Local''
+column, computed as the mean of the General and Medical utility gaps relative to
+\textit{Local Only} of the same aggregator. SLR/NE: lower is better;
+EA/utility/$\Delta$: higher is better.
+}
+\end{table*}

@@ -1,0 +1,6 @@
+dataset,n,verdict_good,verdict_good_pct,verdict_acceptable,verdict_acceptable_pct,verdict_bad,verdict_bad_pct,judge_reid_risk_mean,judge_reid_risk_median,judge_reid_risk_std,judge_utility_score_mean,judge_utility_score_median,judge_utility_score_std,judge_confidence_mean,judge_confidence_median,judge_confidence_std,pearson_reid_vs_util,spearman_reid_vs_util
+ALL,2000,573,28.65,545,27.25,882,44.1,0.2042,0.0,0.3378,0.6968,0.7,0.3134,0.9,0.9,0.0,0.1166,0.1215
+our,500,222,44.4,116,23.2,162,32.4,0.149,0.0,0.3207,0.7818,1.0,0.2715,0.9,0.9,0.0,0.019,0.03
+papillon,500,195,39.0,144,28.8,161,32.2,0.0426,0.0,0.1349,0.7172,0.7,0.2766,0.9,0.9,0.0,-0.0825,-0.0439
+prediax,500,61,12.2,194,38.8,245,49.0,0.5782,0.6,0.3355,0.7874,1.0,0.2818,0.9,0.9,0.0,-0.0644,-0.0369
+PUFT,500,95,19.0,91,18.2,314,62.8,0.047,0.0,0.1712,0.5008,0.4,0.3308,0.9,0.9,0.0,0.0022,0.0255

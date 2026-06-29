@@ -1,0 +1,68 @@
+dataset,category,span,reason,verdict,reid_risk,utility_score
+prediax,other,"<PERSON>
+<PERSON>",The repeated placeholder <PERSON> introduces ambiguity and potential sensitive information not present in the original question.,bad,0.6,0.4
+prediax,other,"<PERSON> ventricular tachycardia
+<PERSON> supraventricular tachycardia
+<PERSON> syndrome
+<PERSON> pattern",The placeholders <PERSON> introduce ambiguity and do not preserve the original context.,bad,0.6,0.4
+prediax,other,<PERSON> class 9,This introduces a nonsensical and potentially sensitive placeholder that was not in the original question.,bad,0.6,0.4
+prediax,other,"<PERSON> count: 6,500/mm^3","Leukocyte count is replaced with <PERSON> count, which is nonsensical and introduces confusion.",bad,0.6,0.4
+prediax,other,98% <US_DRIVER_LICENSE> on room air,"Oxygen saturation is replaced with <US_DRIVER_LICENSE>, which is nonsensical and introduces confusion.",bad,0.6,0.4
+prediax,other,<US_DRIVER_LICENSE>,The placeholder <US_DRIVER_LICENSE> introduces a concept not present in the original question.,bad,0.6,0.0
+prediax,other,<US_BANK_NUMBER>,This placeholder is inappropriate and introduces a sensitive detail not present in the original question.,bad,1.0,0.7
+prediax,other,<DATE_TIME>,The placeholder <DATE_TIME> is not entailed by the question and introduces ambiguity.,bad,0.6,0.4
+prediax,other,<NRP> Unprotected sexual intercourse,This detail is not present in the original question and introduces new sensitive information.,acceptable,0.6,1.0
+prediax,other,<DATE_TIME>,This placeholder introduces ambiguity and does not preserve the original context.,acceptable,0.6,0.7
+prediax,other,<US_DRIVER_LICENSE>,This placeholder introduces ambiguity and does not preserve the original context.,acceptable,0.6,0.7
+prediax,other,<US_DRIVER_LICENSE>,The placeholder <US_DRIVER_LICENSE> introduces a new sensitive detail not entailed by the original question.,bad,1.0,0.7
+prediax,other,<US_DRIVER_LICENSE>,The placeholder <US_DRIVER_LICENSE> introduces a new sensitive detail not entailed by the original question.,bad,0.6,0.4
+prediax,other,<NRP>,The placeholder <NRP> introduces a new sensitive detail not entailed by the original question.,bad,0.6,0.4
+prediax,other,<US_DRIVER_LICENSE>,Placeholder <US_DRIVER_LICENSE> introduces a new sensitive detail not present in the original question.,acceptable,0.6,0.7
+prediax,other,<US_DRIVER_LICENSE>,The placeholder '<US_DRIVER_LICENSE>' is not entailed by the question and introduces confusion.,bad,0.6,0.4
+prediax,other,<NRP>,The placeholder '<NRP>' is not entailed by the question and introduces confusion.,bad,0.6,0.4
+prediax,other,<NRP>,Introduces a new placeholder '<NRP>' not entailed by the original question.,bad,1.0,0.4
+prediax,other,<NRP>,This placeholder is not entailed by the original question and introduces new sensitive information.,bad,1.0,1.0
+prediax,other,<US_DRIVER_LICENSE>,The placeholder <US_DRIVER_LICENSE> introduces a sensitive detail not entailed by the question.,bad,1.0,0.4
+prediax,other,<US_DRIVER_LICENSE>,Placeholder <US_DRIVER_LICENSE> introduces a new sensitive detail not present in the original question.,bad,1.0,1.0
+prediax,other,<US_BANK_NUMBER>,Introduces a sensitive detail not present in the original question.,bad,0.6,0.4
+prediax,other,<NRP>,Introduces a new placeholder '<NRP>' which is not entailed by the original question.,bad,1.0,0.0
+prediax,other,<PERSON>,The placeholder <PERSON> introduces a new sensitive detail not entailed by the original question.,bad,0.6,0.4
+prediax,other,<DATE_TIME>,The placeholder <DATE_TIME> introduces a new sensitive detail not entailed by the original question.,bad,0.6,0.4
+prediax,other,<US_DRIVER_LICENSE>,The placeholder <US_DRIVER_LICENSE> introduces a new sensitive detail not entailed by the original question.,bad,0.6,0.4
+prediax,location/place,<LOCATION>,The placeholder <LOCATION> introduces a new sensitive detail not entailed by the original question.,bad,0.6,0.4
+prediax,other,<US_DRIVER_LICENSE>,Introduces a sensitive identifier not present in the original question.,bad,0.6,0.4
+prediax,other,<NRP>,Introduces a sensitive identifier not present in the original question.,bad,0.6,0.4
+prediax,other,<PERSON>,The placeholder <PERSON> is not supported by the question and could introduce ambiguity.,acceptable,0.6,0.7
+prediax,other,<DATE_TIME>,The placeholder <DATE_TIME> is not supported by the question and could introduce ambiguity.,acceptable,0.6,0.7
+prediax,other,<US_DRIVER_LICENSE>,The placeholder <US_DRIVER_LICENSE> is not supported by the question and could introduce ambiguity.,acceptable,0.6,0.7
+prediax,other,<NRP> virus,The placeholder <NRP> virus is not supported by the question and could introduce ambiguity.,acceptable,0.6,0.7
+prediax,other,<US_DRIVER_LICENSE>,The placeholder <US_DRIVER_LICENSE> introduces a new sensitive detail not entailed by the question.,acceptable,0.6,0.7
+prediax,other,<NRP>,The placeholder <NRP> is not entailed by the original question and introduces new sensitive information.,bad,1.0,0.7
+prediax,other,<NRP>,This placeholder is not entailed by the original question and introduces ambiguity.,acceptable,0.6,0.7
+prediax,other,<PERSON>,The placeholder <PERSON> is not entailed by the question and introduces ambiguity.,bad,0.6,0.4
+prediax,other,<DATE_TIME>,The placeholder <DATE_TIME> is not entailed by the question and introduces ambiguity.,bad,0.6,0.4
+prediax,other,<US_DRIVER_LICENSE>,The placeholder <US_DRIVER_LICENSE> is not entailed by the question and introduces ambiguity.,bad,0.6,0.4
+prediax,other,<NRP>,The placeholder <NRP> is not entailed by the question and introduces ambiguity.,bad,0.6,0.4
+prediax,other,<DATE_TIME>,The placeholder <DATE_TIME> introduces ambiguity and does not correspond to any specific detail in the original question.,bad,0.6,0.4
+prediax,other,<NRP>,The placeholder <NRP> introduces ambiguity and does not correspond to any specific detail in the original question.,bad,0.6,0.4
+prediax,other,<NRP> with pasta al dente.,The mention of 'pasta al dente' is specific to Italian cuisine and was not redacted.,bad,0.6,0.4
+prediax,location/place,<LOCATION>,The placeholder <LOCATION> introduces ambiguity and could potentially be filled with sensitive information not present in the original question.,acceptable,0.6,1.0
+prediax,other,<DATE_TIME>,Introduces sensitive placeholder not entailed by the original question.,acceptable,0.6,1.0
+prediax,other,<NRP>,Placeholder introduces ambiguity that could lead to misinterpretation.,bad,0.6,0.4
+prediax,other,<PERSON>,Placeholder introduces ambiguity that could lead to misinterpretation.,bad,0.6,0.4
+prediax,other,<DATE_TIME>,The placeholder <DATE_TIME> introduces a new sensitive detail that was not in the original question.,bad,0.6,0.0
+prediax,other,<NRP>,The placeholder <NRP> introduces a new sensitive detail that was not in the original question.,bad,0.6,0.0
+prediax,location/place,<LOCATION>,The placeholder <LOCATION> introduces a new sensitive detail that was not in the original question.,bad,0.6,0.0
+prediax,other,<URL>,The placeholder <URL> introduces a new sensitive detail that was not in the original question.,bad,0.6,0.0
+prediax,other,<DATE_TIME>,The placeholder <DATE_TIME> introduces a new sensitive detail that was not present in the original question.,bad,1.0,1.0
+prediax,other,<DATE_TIME>,The placeholder <DATE_TIME> is not entailed by the original question and introduces a new sensitive detail.,bad,0.6,1.0
+prediax,other,<PERSON>,The placeholder <PERSON> is not entailed by the original question and introduces a new sensitive detail.,bad,0.6,1.0
+prediax,other,on <DATE_TIME>,The placeholder <DATE_TIME> introduces a new sensitive detail that was not present in the original question.,acceptable,0.3,1.0
+prediax,other,my employer has been misclassifying me as an independent contractor since <DATE_TIME>,The date is redacted but the context of misclassification is still sensitive.,acceptable,0.6,1.0
+prediax,location/place,"<LOCATION>, <LOCATION>",The placeholder does not remove the sensitive location information effectively.,bad,0.6,1.0
+prediax,other,<NRP>,"The placeholder <NRP> does not provide the necessary context for the recipe language, which is Italian.",bad,0.6,0.4
+prediax,other,<DATE_TIME>,The placeholder <DATE_TIME> introduces a new sensitive detail not present in the original question.,bad,1.0,1.0
+prediax,other,<PHONE_NUMBER>,The placeholder <PHONE_NUMBER> is not entailed by the original question and introduces a new sensitive detail.,bad,0.6,0.4
+prediax,other,<URL>,The placeholder <URL> is introduced without context from the original question.,acceptable,0.6,0.7
+prediax,other,<DATE_TIME>,The original question did not mention any specific date or time.,good,0.0,1.0
+prediax,other,<PERSON>,The placeholder <PERSON> is not entailed by the original question and introduces unnecessary ambiguity.,acceptable,0.6,1.0

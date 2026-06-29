@@ -1,0 +1,151 @@
+% =============================================================================
+%  Figure 2 — Data Construction. Reverse-synthesis main loop with two
+%  auxiliary tracks (WildChat anchor + Medical challenge set).
+%  Required preamble (in main.tex):
+%    \usepackage{tikz}
+%    \usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit,backgrounds,calc}
+%    \usepackage{xcolor}
+% =============================================================================
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+    font=\footnotesize,
+    >={Stealth[length=2.4mm]},
+    every node/.style={align=center},
+    stage/.style={draw,thick,rounded corners=3pt,inner sep=6pt,minimum height=1.05cm,
+                  text width=4.5cm,fill=blue!6,line width=0.5pt},
+    bigstage/.style={draw,thick,rounded corners=3pt,inner sep=6pt,
+                     minimum height=1.4cm,text width=10.0cm,fill=blue!8,line width=0.6pt},
+    aux/.style={draw,rounded corners=2pt,inner sep=5pt,fill=gray!8,
+                text width=6.0cm,line width=0.4pt,font=\scriptsize},
+    note/.style={draw,rounded corners=2pt,inner sep=4pt,fill=yellow!12,
+                 text width=4.6cm,line width=0.3pt,font=\scriptsize},
+    label/.style={font=\scriptsize\itshape,inner sep=1pt},
+]
+
+% ====================== MAIN STAGE: reverse-synthesis loop ===================
+\node[font=\bfseries,anchor=west] (banner)
+   at (-7.0,1.4) {\textsc{Reverse-synthesis loop} \ \scriptsize\normalfont(main route, dominant subset)};
+
+% --- (1) Structured sampler -----------------------------------------------
+\node[bigstage,below=0.2cm of banner.south west,anchor=north west,
+      label={[font=\scriptsize\bfseries,xshift=4pt]north west:\textcircled{\scriptsize 1}~Structured sampler}]
+      (S1) {%
+\begin{tabular}{@{}l l l@{}}
+\textcolor{\colTrust}{\textbf{11 domains}} & \textcolor{\colTrust}{\textbf{20 task types}}
+   & \textcolor{\colTrust}{\textbf{30 attribute types}}\\[-1pt]
+\scriptsize health, finance, & \scriptsize summarisation, & \scriptsize family hx, medication,\\[-1pt]
+\scriptsize employment\,\dots & \scriptsize translation, code\,\dots & \scriptsize whereabouts\,\dots\\
+\end{tabular}\\[2pt]
+\scriptsize\,$+$\,soft \emph{essential-pool} prior per domain
+\quad\,$+$\,3 stylistic axes (subject\,/\,embedding\,/\,tone)\\[2pt]
+emits skeleton \;$\bigl(\text{domain},\text{task},\text{subject},\,\textcolor{\colE}{\mathcal{E}},\textcolor{\colN}{\mathcal{N}}\bigr)$
+};
+
+% --- (2) Generator --------------------------------------------------------
+\node[bigstage,below=0.55cm of S1,
+      label={[font=\scriptsize\bfseries,xshift=4pt]north west:\textcircled{\scriptsize 2}~Generator \textnormal{[\,Claude Sonnet\,4.6\,]}}]
+      (S2) {%
+Embeds every \textcolor{\colN}{$n\in\mathcal{N}$} naturally; makes every
+\textcolor{\colE}{$e\in\mathcal{E}$} \emph{semantically load-bearing}
+(removing $e$ $\Rightarrow$ unanswerable).
+};
+
+% --- (3) Independent judge ------------------------------------------------
+\node[bigstage,below=0.55cm of S2,
+      label={[font=\scriptsize\bfseries,xshift=4pt]north west:\textcircled{\scriptsize 3}~Independent judge \textnormal{[\,GPT-4o, heterogeneous\,]}}]
+      (S3) {%
+Sees the surface prompt $y$ \emph{only} (skeleton hidden);
+re-extracts $(\hat{\mathcal{E}},\hat{\mathcal{N}})$.
+};
+
+% --- (4) Two-stage matcher ------------------------------------------------
+\node[bigstage,below=0.55cm of S3,fill=blue!10,
+      label={[font=\scriptsize\bfseries,xshift=4pt]north west:\textcircled{\scriptsize 4}~Two-stage matcher \;\;match $\hat{\mathcal{E}}\!\leftrightarrow\!\mathcal{E}$\, AND\, $\hat{\mathcal{N}}\!\leftrightarrow\!\mathcal{N}$}]
+      (S4) {%
+\textbf{Stage 1.} stop-word-filtered token-overlap coverage $\ge 0.5$
+\quad$\xrightarrow{\text{fail}}$\quad
+\textbf{Stage 2.} BERT cosine sim.\ $\ge 0.65$
+};
+
+% --- arrows down the main spine ------------------------------------------
+\draw[->,thick] (S1.south) -- (S2.north)
+   node[label,midway,right=2pt]{proposes $(\textcolor{\colE}{\mathcal{E}},\textcolor{\colN}{\mathcal{N}})$};
+\draw[->,thick] (S2.south) -- (S3.north)
+   node[label,midway,right=2pt]{emits surface prompt $y$};
+\draw[->,thick] (S3.south) -- (S4.north)
+   node[label,midway,right=2pt]{$(\hat{\mathcal{E}},\hat{\mathcal{N}})$};
+
+% --- decision: admit / reject + regenerate loop ---------------------------
+\node[stage,fill=green!12,below=0.55cm of S4.south,xshift=-2.8cm,minimum height=0.85cm,text width=3.6cm]
+      (ADMIT) {\textbf{\textcolor{\colE}{\ding{51}~Admit}}\\\scriptsize labels $\equiv$ by construction};
+\node[stage,fill=red!10,below=0.55cm of S4.south,xshift=2.8cm,minimum height=0.85cm,text width=3.6cm]
+      (REJ)   {\textbf{\textcolor{\colN}{\ding{55}~Reject \&\ regenerate}}};
+
+\draw[->,thick] (S4.south) ++(-2.8,0) -- (ADMIT.north) node[label,midway,left=1pt]{agree};
+\draw[->,thick] (S4.south) ++( 2.8,0) -- (REJ.north)   node[label,midway,right=1pt]{disagree};
+
+% loop back: reject -> back to sampler
+\draw[->,thick,red!60!black,rounded corners=6pt]
+   (REJ.east) -- ++(1.6,0) |- ($(S1.east)+(0,-0.1)$)
+   node[label,pos=0.27,right=1pt,text=red!60!black]{resample seed};
+
+% --- audit note (inline, right of admit) ----------------------------------
+\node[note,right=0.7cm of ADMIT,xshift=-0.0cm]
+      (AUDIT) {\textbf{Human audit.}~2 authors $\times$ 200 samples\\
+                $\to$ \textbf{94.5\%} agreement, Cohen's $\kappa{=}0.82$};
+\draw[->,dashed,gray] (ADMIT.east) -- (AUDIT.west);
+
+% ====================== AUX TRACKS (smaller, below) ==========================
+\node[aux,below=1.3cm of ADMIT.south,xshift=-2.0cm,anchor=north,
+      label={[font=\scriptsize\bfseries,xshift=2pt]north west:\textsc{Aux-A}~~WildChat anchor (OOD probe)}]
+      (AUX1) {%
+$\sim$352k raw $\to$ \emph{structural filter}
+(single-turn, EN, 25--250\,w) $\to$ $\sim$50k\\
+$\to$ GPT-4o-mini violation rater $\to$ 656\\
+$\to$ GPT-4o $(\hat{\mathcal{E}},\hat{\mathcal{N}})$, keep $|\hat{\mathcal{N}}|{>}0$\\
+\textcolor{\colE}{\ding{51}}~\textbf{345 anchored real-user samples}
+};
+
+\node[aux,below=1.3cm of ADMIT.south,xshift=5.0cm,anchor=north,
+      label={[font=\scriptsize\bfseries,xshift=2pt]north west:\textsc{Aux-B}~~Medical challenge set (over-removal stress test)}]
+      (AUX2) {%
+Medical-o1 board-style MCQ + verified answer\\
+$\to$ GPT-4o \emph{verbatim} extracts answer-decisive
+\textcolor{\colE}{$\mathcal{E}$}\\
+$\to$ controlled \textcolor{\colN}{$\mathcal{N}$} injection
+(white\,/\,grey\,/\,black list)\\
+\textcolor{\colE}{\ding{51}}~\textbf{950 medical samples}
+};
+
+% ====================== final benchmark sink =================================
+\node[draw,thick,rounded corners=3pt,fill=orange!12,line width=0.6pt,
+      below=0.9cm of AUX1.south east,xshift=2.2cm,anchor=north,
+      text width=8.6cm,inner sep=6pt]
+      (FB) {%
+\textbf{Final benchmark} \;\;
+\textbf{3{,}167} samples \,$\;\bullet\;$\,
+\textbf{8{,}727} essential spans \,$\;\bullet\;$\,
+\textbf{13{,}773} non-essential spans
+};
+
+% --- arrows from admit + aux into final ----------------------------------
+\draw[->,thick] (ADMIT.south) -- ($(FB.north)+(-2.4,0)$);
+\draw[->,thick] (AUX1.south)  -- ($(FB.north)+(-0.6,0)$);
+\draw[->,thick] (AUX2.south)  -- ($(FB.north)+( 1.6,0)$);
+
+\end{tikzpicture}
+
+\caption{\textbf{Data construction.} Our benchmark is anchored by a
+\emph{reverse-synthesis} loop in which a structured sampler proposes
+$(\textcolor{\colE}{\mathcal{E}},\textcolor{\colN}{\mathcal{N}})$, a
+generator embeds them into a fluent prompt, and a heterogeneous judge
+must re-extract the same partition before a sample is admitted; a
+two-stage token/embedding matcher gates the loop, and rejected samples
+trigger resampling. A WildChat-anchored OOD probe (Aux-A) and a
+medical over-removal stress set (Aux-B) are layered on top of the
+main loop to verify generalisation under the same
+$(\mathcal{E},\mathcal{N})$ schema.}
+\label{fig:data}
+\end{figure*}

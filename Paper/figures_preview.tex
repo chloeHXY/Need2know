@@ -1,0 +1,33 @@
+% =============================================================================
+%  Standalone preview for the three figures.
+%  Compile:   pdflatex figures_preview.tex
+%  (run twice if labels look odd)
+% =============================================================================
+\documentclass[11pt]{article}
+
+\usepackage[a4paper,margin=1.2cm,landscape]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit,backgrounds,calc,decorations.pathreplacing}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{pifont}     % for \ding (check / cross marks)
+\usepackage{graphicx}
+
+% Make figure* behave like figure in single-column standalone mode
+\usepackage{stfloats}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\textfloatsep}{4pt}
+
+\begin{document}
+
+\input{figures/fig1_teaser.tex}
+
+\clearpage
+\input{figures/fig2_data.tex}
+
+\clearpage
+\input{figures/fig3_method.tex}
+
+\end{document}

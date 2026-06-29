@@ -1,0 +1,4 @@
+judge_verdict,n,mean_util,mean_risk,mean_word_ratio,median_word_ratio,mean_q_words,mean_r_words,mean_n_priv_issues,mean_n_util_issues
+acceptable,91,0.72,0.059,0.345,0.322,85.088,25.736,0.209,1.077
+bad,314,0.286,0.057,0.263,0.215,101.707,24.548,0.143,3.64
+good,95,1.0,0.003,0.351,0.316,82.074,26.011,0.011,0.0

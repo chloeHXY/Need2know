@@ -1,0 +1,6 @@
+issue_type,n_samples_with_type,mean_reid_risk,median_reid_risk
+direct_leak,493,0.7103,0.6
+semantic_leak,236,0.5742,0.6
+inferential_leak,5,0.3,0.3
+combination_leak,0,,
+(no privacy issue),1389,0.0002,0.0

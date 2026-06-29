@@ -1,0 +1,15 @@
+{
+  "n_samples_with_new_sensitive":43,
+  "pct_samples_with_new_sensitive":2.15,
+  "total_new_sensitive_items":63,
+  "categories":[
+    [
+      "other",
+      59
+    ],
+    [
+      "location\/place",
+      4
+    ]
+  ]
+}

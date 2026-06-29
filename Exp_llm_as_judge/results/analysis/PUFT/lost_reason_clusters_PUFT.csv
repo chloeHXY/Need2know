@@ -1,0 +1,41 @@
+reason_prefix,count
+item missing priv_query,10
+detail missing priv_query part original song,10
+essential task attribute missing priv_query,6
+priv_query include patient symptoms clinical details,5
+specific details injuries amputations missing,5
+answer options missing essential task,4
+query include drug options necessary understand,4
+symptom mentioned priv_query could relevant diagnosing,4
+specific muscle strength ratings limb mentioned,4
+detail missing priv_query could affect developmental,3
+detail missing priv_query could important diagnosing,3
+priv_query only provides answer option abd,3
+detail missing priv_query important diagnosing patient,3
+essential task attributes related case control,3
+priv_query mention grades subjects,3
+details about investment property missing necessary,3
+candidate name aisha patel missing essential,2
+priv_query mention immunologic abnormalities including normal,2
+priv_query mention specific detail about postmortem,2
+priv_query include information patient able extend,2
+detail missing priv_query may relevant determining,2
+specific symptom missing crucial identifying condition,2
+specific symptoms missing crucial identifying condition,2
+rewrite mention specific concern rodhiola rosea,2
+condition car great shape mentioned could,2
+request pretend user old grandma missing,2
+priv_query mention character almost died several,2
+priv_query mention character spent several months,2
+priv_query mention character knowledge about own,2
+history participation previous examinations missing supports,2
+specific details spinal injuries missing,2
+specific details amputations left leg hip,2
+priv_query mention patient frequent snacking relevant,1
+priv_query mention patient brushing frequency relevant,1
+priv_query mention presence multiple pit fissure,1
+priv_query mention need capture vibe authentically,1
+priv_query mention character based friend named,1
+weight gain over past year missing,1
+detail about eating since getting full,1
+negative hcg result missing important ruling,1

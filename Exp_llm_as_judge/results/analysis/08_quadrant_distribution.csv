@@ -1,0 +1,17 @@
+system,quadrant,pct
+Ours,"Ideal (high $U$, low $R$)",45.0
+Ours,High-$U$ / High-$R$,9.8
+Ours,Low-$U$ / Low-$R$,20.2
+Ours,"Worst (low $U$, high $R$)",4.4
+Papillon,"Ideal (high $U$, low $R$)",40.8
+Papillon,High-$U$ / High-$R$,0.6
+Papillon,Low-$U$ / Low-$R$,29.2
+Papillon,"Worst (low $U$, high $R$)",3.0
+Presidio,"Ideal (high $U$, low $R$)",18.6
+Presidio,High-$U$ / High-$R$,40.2
+Presidio,Low-$U$ / Low-$R$,4.6
+Presidio,"Worst (low $U$, high $R$)",21.6
+PUFT,"Ideal (high $U$, low $R$)",19.6
+PUFT,High-$U$ / High-$R$,1.0
+PUFT,Low-$U$ / Low-$R$,58.4
+PUFT,"Worst (low $U$, high $R$)",3.8
