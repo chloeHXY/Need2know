@@ -16,6 +16,10 @@ them. No model call is needed; this is a quick offline filter.
 Usage:
     python find_over_abstract.py            # show top 20
     python find_over_abstract.py --topk 30 --out abstract.jsonl
+
+用于短暂的case study
+原始指令：在/group/40047/eiraxyhuang/workspace/fc/DataG/papillon/step1_priv_query.parquet中筛出一些ability为priv，
+priv_query 相较于原问题extra_info['question'] ，明显过度抽象的例子
 """
 
 import argparse

@@ -1,0 +1,6 @@
+# Layer 2 (WildChat natural anchor) extras on top of Layer 1.
+# Layer 1's requirements (httpx, pyyaml) are also needed -- this file lists
+# only the additional packages used by the natural-anchor pipeline.
+pandas>=2.0
+pyarrow>=15.0
+faker>=24.0

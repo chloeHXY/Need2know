@@ -1,6 +1,7 @@
 
 # `pupa/` 目录说明
-
+## chloe add
+【chloe】我当时应该是想再pupa这个别人的数据集上面测试一下方法，但是后面实际上没有转化。
 本目录用于在 **PUPA (PAPILLON benchmark)** 数据集上复现 / 评测“本地模型重写 query → 远程强模型回答 → 本地模型整合”这条隐私委托 pipeline，并同时评估两个核心指标：
 
 - **QUAL（质量保持）**：最终回答 `merge_inference_answer` 是否至少和 GPT-4o 直接回答原始问题（`gpt_answer`）一样好。

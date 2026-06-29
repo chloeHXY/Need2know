@@ -16,6 +16,8 @@ Usage:
     python 0_pii_note.py                    # 默认输入/输出路径
     python 0_pii_note.py --limit 20         # smoke test
     python 0_pii_note.py --workers 8
+
+这是一个使用 GPT-4o 对 parquet 文件中 extra_info.question 字段进行 PII 打标的任务
 """
 
 from __future__ import annotations

@@ -1,0 +1,7 @@
+{
+  "calls": 20033,
+  "prompt_tokens": 23085447,
+  "completion_tokens": 1449016,
+  "total_tokens": 24534463,
+  "cost_usd": 4.332227
+}

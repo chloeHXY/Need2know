@@ -1,0 +1,94 @@
+# ---------------------------------------------------------------------------
+# Layer 2 -- WildChat natural anchor pipeline -- full-shard S1-only config.
+#
+# Inputs: two real WildChat parquet shards under layer2_nature_dialogue/.
+# Outputs land in a dedicated stage_dir so we do NOT clobber the existing
+# 3000-row smoke-test checkpoints under data/stages/.
+# Run with: scripts/run_full.py --stop-after struct
+# ---------------------------------------------------------------------------
+
+source:
+  parquet_paths:
+    - /group/40047/eiraxyhuang/workspace/fc/DataG/layer2_nature_dialogue/train-00000-of-00006.parquet
+    - /group/40047/eiraxyhuang/workspace/fc/DataG/layer2_nature_dialogue/train-00001-of-00006.parquet
+  languages: ["English"]
+
+# ---------------------------------------------------------------------------
+# S1 -- structural filter (deterministic, no LLM calls)
+# ---------------------------------------------------------------------------
+struct_filter:
+  word_min: 25
+  word_max: 420
+  single_turn_only: true
+  drop_toxic: true
+  redacted_route: "anchor_pool"   # "drop" | "anchor_pool" | "keep_inline"
+
+# ---------------------------------------------------------------------------
+# Pipeline -- stop after S1, dedicated stage_dir.
+# ---------------------------------------------------------------------------
+pipeline:
+  concurrency: 16
+  stage_dir: /group/40047/eiraxyhuang/workspace/fc/DataG/layer2_nature_dialogue/data/stages_full
+  final_dir: /group/40047/eiraxyhuang/workspace/fc/DataG/layer2_nature_dialogue/data/final_full
+  stop_after: "screen"
+  final_status_keep: ["PASS"]
+
+# ---------------------------------------------------------------------------
+# The blocks below are NOT exercised when stop_after=="struct". They are
+# kept so the YAML matches the schema expected by pipeline.PipelineConfig
+# and downstream stages can be enabled later by flipping stop_after.
+# ---------------------------------------------------------------------------
+screen:
+  max_retries: 5
+  retry_base_delay: 1.0
+  models:
+    - name: gpt4o-mini-screen
+      model: gpt-4o-mini
+      provider: venus
+      base_url: http://v2.open.venus.oa.com/llmproxy/chat/completions
+      api_key_env: ENV_VENUS_OPENAPI_SECRET_ID
+      temperature: 0.0
+      max_tokens: 300
+      weight: 1.0
+  keep_content_types:
+    - first_person_task
+    - third_party_about
+    - mixed
+  require_ci_concern: true
+
+annotate_judge_a:
+  max_retries: 5
+  models: []
+  use_json_mode: true
+
+annotate_judge_b:
+  max_retries: 5
+  models: []
+  use_json_mode: false
+
+concord:
+  matcher_token_threshold: 0.5
+  matcher_cosine_threshold: 0.65
+  pass_ne_iou: 0.6
+  pass_e_iou: 0.6
+  pass_require_domain_match: true
+  soft_ne_iou: 0.4
+  soft_e_iou: 0.4
+
+reformulator:
+  max_retries: 5
+  models: []
+
+embeddings:
+  enabled: false
+
+ethical:
+  faker_locale: "en_US"
+  replace_attributes:
+    - name
+    - email
+    - phone_number
+    - address
+    - ssn
+    - driver_license
+  drop_high_reidentification: true

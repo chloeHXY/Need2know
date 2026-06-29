@@ -1,0 +1,7 @@
+{
+  "calls": 10,
+  "prompt_tokens": 5178,
+  "completion_tokens": 950,
+  "total_tokens": 6128,
+  "cost_usd": 0.001347
+}

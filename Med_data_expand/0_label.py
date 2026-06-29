@@ -24,6 +24,8 @@ Environment
 ``ENV_VENUS_OPENAPI_SECRET_ID`` must be exported before running:
 
     export ENV_VENUS_OPENAPI_SECRET_ID=<your venus openapi secret id>
+
+    修改该脚本，从/group/40047/eiraxyhuang/workspace/fc/DataG/Med_data_expand/medical_o1_sft_mcq.json捞取1000条数据进行annotate，但注意不能在/group/40047/eiraxyhuang/workspace/fc/DataG/Med_data_expand/labels_gpt-4o_start0_n500_20260515_101049.jsonl出现过
 """
 
 from __future__ import annotations

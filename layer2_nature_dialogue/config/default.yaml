@@ -1,0 +1,153 @@
+# ---------------------------------------------------------------------------
+# Layer 2 -- WildChat natural anchor pipeline -- default config.
+#
+# Override any field by passing --config to scripts/run_full.py. All LLM
+# blocks share Layer 1's LLMClient schema (see ../synth/llm_client.py).
+# ---------------------------------------------------------------------------
+
+source:
+  parquet_path: nature_data_syn/train_subset_3000.parquet
+  # Languages to keep. WildChat is multilingual; we restrict to English
+  # (Layer 1 schema is English-only for now).
+  languages: ["English"]
+
+# ---------------------------------------------------------------------------
+# S1 -- structural filter
+# ---------------------------------------------------------------------------
+struct_filter:
+  word_min: 25
+  word_max: 2500
+  single_turn_only: true
+  drop_toxic: true
+  # `redacted=True` rows are PII-flagged by WildChat. They're great anchors
+  # for the human-verified test set, so by default we route them aside
+  # rather than discard.
+  redacted_route: "anchor_pool"   # "drop" | "anchor_pool" | "keep_inline"
+
+# ---------------------------------------------------------------------------
+# S2+S3 -- screening (content type + binary CI-concern flag)
+# A cheap LLM call. Combined to halve cost.
+# ---------------------------------------------------------------------------
+screen:
+  max_retries: 5
+  retry_base_delay: 1.0
+  models:
+    - name: gpt4o-mini-screen
+      model: gpt-4o-mini
+      base_url: https://api.openai.com/v1
+      api_key_env: OPENAI_API_KEY
+      temperature: 0.0
+      max_tokens: 300
+      weight: 1.0
+  # content types kept downstream
+  keep_content_types:
+    - first_person_task
+    - third_party_about
+    - mixed
+  # require both: content_type is in keep set AND has_ci_concern == true
+  require_ci_concern: true
+
+# ---------------------------------------------------------------------------
+# S4 -- full CI annotation (judge_A)
+# Should be a strong model. Mirrors paper's Llama-3.1-405B in spirit.
+# ---------------------------------------------------------------------------
+annotate_judge_a:
+  max_retries: 5
+  retry_base_delay: 1.0
+  models:
+    - name: judge-a-gpt4o
+      model: gpt-4o
+      base_url: https://api.openai.com/v1
+      api_key_env: OPENAI_API_KEY
+      temperature: 0.0
+      max_tokens: 1200
+      weight: 1.0
+  use_json_mode: true
+
+# ---------------------------------------------------------------------------
+# S5 -- second independent judge (judge_B)
+# Must be cross-vendor / cross-family for a real second opinion.
+# ---------------------------------------------------------------------------
+annotate_judge_b:
+  max_retries: 5
+  retry_base_delay: 1.0
+  models:
+    - name: judge-b-deepseek
+      model: deepseek-chat
+      base_url: https://api.deepseek.com/v1
+      api_key_env: DEEPSEEK_API_KEY
+      temperature: 0.0
+      max_tokens: 1200
+      weight: 1.0
+  use_json_mode: false
+
+# ---------------------------------------------------------------------------
+# Concordance thresholds (S5)
+# Soft set IoU between span sets, plus categorical agreement on domain/task.
+# ---------------------------------------------------------------------------
+concord:
+  matcher_token_threshold: 0.5
+  matcher_cosine_threshold: 0.65
+  pass_ne_iou: 0.6
+  pass_e_iou: 0.6
+  pass_require_domain_match: true
+  soft_ne_iou: 0.4
+  soft_e_iou: 0.4
+
+# ---------------------------------------------------------------------------
+# S7 -- gold reformulation (Appendix E.6 adapted)
+# ---------------------------------------------------------------------------
+reformulator:
+  max_retries: 5
+  retry_base_delay: 1.0
+  models:
+    - name: reformulator-gpt4o-mini
+      model: gpt-4o-mini
+      base_url: https://api.openai.com/v1
+      api_key_env: OPENAI_API_KEY
+      temperature: 0.3
+      max_tokens: 400
+      weight: 1.0
+
+# ---------------------------------------------------------------------------
+# Embedding model -- used by concord soft-matcher.
+# ---------------------------------------------------------------------------
+embeddings:
+  enabled: true
+  model: text-embedding-3-small
+  base_url: https://api.openai.com/v1
+  api_key_env: OPENAI_API_KEY
+  batch_size: 64
+  timeout: 60.0
+
+# ---------------------------------------------------------------------------
+# Pipeline-level controls
+# ---------------------------------------------------------------------------
+pipeline:
+  concurrency: 16
+  # Each stage writes its own jsonl checkpoint so you can re-run individual
+  # stages without burning tokens upstream.
+  stage_dir: nature_data_syn/data/stages
+  final_dir: nature_data_syn/data/final
+  # Stop-after-stage: e.g. "screen" runs S0-S3 and stops. Empty = run all.
+  stop_after: ""
+  # Drop SOFT/HARD concord rows from the final public set, but keep them
+  # in stages/concord.jsonl for inspection.
+  final_status_keep: ["PASS"]
+
+# ---------------------------------------------------------------------------
+# S9 -- ethical sanitizer (run before public release)
+# ---------------------------------------------------------------------------
+ethical:
+  faker_locale: "en_US"
+  # Replace these span types when they appear in the judge consensus.
+  replace_attributes:
+    - name
+    - email
+    - phone_number
+    - address
+    - ssn
+    - driver_license
+  # If a row contains 4+ "very specific" attributes (full address + employer
+  # + dates + name), drop it instead of replacing.
+  drop_high_reidentification: true

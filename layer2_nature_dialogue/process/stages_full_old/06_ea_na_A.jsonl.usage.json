@@ -1,0 +1,8 @@
+{
+  "model": "gpt-4o",
+  "calls": 312,
+  "prompt_tokens": 181279,
+  "completion_tokens": 43149,
+  "total_tokens": 224428,
+  "cost_usd": 1.55363
+}
