@@ -1,0 +1,22 @@
+python scripts/filter_pass.py data/smoke_58_merged.jsonl -o data/smoke_58_merged.clean.jsonl
+
+
+python scripts/run_synth.py --config config/default.yaml --n 600 --output data/smoke_58_3.jsonl
+
+
+python scripts/run_synth.py --config config/default.yaml --n 10 --output data/smoke_v2.jsonl
+
+
+
+python scripts/pii_tag.py \
+  --config config/default.yaml \
+  --input  data/smoke_58.clean.jsonl \
+  --output data/smoke_58.clean_tag.jsonl \
+  --n 1022
+
+    python scripts/merge_pii_tags.py \
+        --clean data/smoke_58.clean.jsonl \
+        --tag data/smoke_58.clean_tag.jsonl \
+        --out data/smoke_58.clean_with_tags.jsonl
+
+

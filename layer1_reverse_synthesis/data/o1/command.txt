@@ -1,0 +1,34 @@
+# 先导出 Venus 凭据
+export ENV_VENUS_OPENAPI_SECRET_ID=<your venus openapi secret id>
+
+# 打 50 条，并发 8
+python -m data.o1.label --n 50 --concurrency 8
+
+# 从第 100 条开始打 200 条
+python -m data.o1.label --n 200 --start 100
+
+# 切换到公开 OpenAI API
+python -m data.o1.label --n 50 \
+  --provider openai \
+  --base-url https://api.openai.com/v1 \
+  --api-key-env OPENAI_API_KEY
+
+
+export ENV_VENUS_OPENAPI_SECRET_ID=<your venus openapi secret id>
+
+# 改写默认输入文件中的前 100 条
+python -m data.o1.synthesize_question --n 100 --concurrency 8
+
+# 改写全部 500 条
+python -m data.o1.synthesize_question --n -1
+
+# 指定其他输入与输出
+python -m data.o1.synthesize_question \
+    --input data/o1/labels/labels_gpt-4o_start0_n500_20260515_101049.jsonl \
+    --output data/o1/syn_questions/syn_v1.jsonl \
+    --n 500
+
+
+## 流程讲解
+先打essential的标
+然后添加额外的隐私信息合成新的query

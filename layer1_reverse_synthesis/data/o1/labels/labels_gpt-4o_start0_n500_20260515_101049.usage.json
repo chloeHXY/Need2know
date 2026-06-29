@@ -1,0 +1,19 @@
+{
+  "model": "gpt-4o",
+  "provider": "venus",
+  "n_requested": 500,
+  "n_ok": 500,
+  "n_fail": 0,
+  "elapsed_seconds": 217.99,
+  "usage": {
+    "gpt-4o": {
+      "model": "gpt-4o",
+      "prompt_tokens": 609953,
+      "completion_tokens": 158935,
+      "requests": 500,
+      "cost_usd": 5.433789999999994,
+      "price_in": 5.0,
+      "price_out": 15.0
+    }
+  }
+}

@@ -1,0 +1,72 @@
+\paragraph{Generator prompt.}
+\begin{promptbox}{Generator prompt.}
+{\fontsize{7pt}{8pt}\selectfont
+
+\noindent\textbf{System}\\
+You are a data-synthesis assistant that crafts realistic, natural-sounding user queries for an AI chatbot. Output ONLY the user query text -- no preamble, JSON, quotes, or labels.
+
+\noindent\textbf{User}\\
+Compose a single realistic user message.
+
+\noindent\textbf{Context}\\
+domain \texttt{\{domain\}}, task \texttt{\{task\}} (or task brief \texttt{\{task\_brief\}} when no sensitive attribute is essential), subject framing \texttt{\{subject\}}, writing style \texttt{\{style\}}, tone \texttt{\{tone\}}.
+
+\noindent\textbf{Constraints}
+\begin{itemize}\setlength\itemsep{0pt}\setlength\parskip{0pt}\setlength\topsep{1pt}
+\item The query MUST naturally include EVERY essential and non-essential item listed; values may be rephrased but the underlying facts must stay inferable.
+\item Essential items are necessary to answer; removing them breaks the request. Non-essential items are user ``oversharing'' and must be safely removable.
+\item Do NOT add new PII beyond the listed items. Length 30--150 words; sound like a real user.
+\item Output ONLY the final message text.
+\end{itemize}
+
+\noindent\textbf{Confusion cues (conditional)}\\
+\texttt{shared\_attr}: the same attribute type appears in both buckets; a \texttt{[SUBJECT NOTE]} marks the third-party owner, and the writing must disambiguate ownership. \\
+\texttt{over\_removal\_trap}: attributes that look sensitive (e.g., a name) are essential because the task is addressed to that person; stripping them must break the request.
+
+\noindent\textbf{Inputs appended to the prompt}\\
+ESSENTIAL information: \texttt{\{e\_list\}}\\
+NON-ESSENTIAL sensitive information: \texttt{\{ne\_list\}}\\
+Each item is formatted as \texttt{- attr (desc): "value" [SUBJECT NOTE: ...]}.
+}
+\end{promptbox}
+
+\paragraph{Consistency judge prompt.}
+\begin{promptbox}{Consistency judge prompt.}
+{\fontsize{7pt}{8pt}\selectfont
+
+\noindent\textbf{System}\\
+You are an evaluator for question-answering systems.
+
+\noindent\textbf{Criteria}\\
+Determine whether the system-generated answer aligns with the provided gold (reference) answers. Mark as \textbf{1} if the answer (i) contains the same key information, (ii) expresses the same meaning even with different wording, and (iii) is factually consistent with the gold answers; otherwise \textbf{0}.
+
+\noindent\textbf{Output}\\
+Reply with \texttt{"1"} or \texttt{"0"} only.
+}
+\end{promptbox}
+
+\paragraph{Reformulator prompt.}
+\begin{promptbox}{Reformulator prompt.}
+{\fontsize{7pt}{8pt}\selectfont
+
+\noindent\textbf{System}\\
+You are a privacy-conscious assistant that reformulates user prompts to preserve contextual privacy while keeping the original intent and structure. Output the reformulated prompt only -- one line, no JSON, quotes, or labels.
+
+\noindent\textbf{User}\\
+Reformulate the message so that: (i) the request type is preserved (question stays a question); (ii) ALL essential information is kept, possibly generalized but still informative; (iii) non-essential information is removed or generalized away; (iv) the model rewrites only, never answers; (v) the output is fluent and natural.
+
+\noindent\textbf{Few-shot examples}
+\begin{itemize}\setlength\itemsep{0pt}\setlength\parskip{0pt}\setlength\topsep{1pt}
+\item \textit{Orig:} ``What's a message that I, as a cool college student, can say to someone whom I want to meet?'' $\rightarrow$ \textit{Ref:} ``What's a good way to initiate a conversation with someone I'd like to connect with?''
+\item \textit{Orig:} ``I need help writing an email to Professor Smith about missing class yesterday due to food poisoning.'' $\rightarrow$ \textit{Ref:} ``I need help writing an email about a class absence due to illness.''
+\item \textit{Orig:} ``Looking for advice on managing my diabetes. I take Metformin twice daily and my sister suggested trying a keto diet.'' $\rightarrow$ \textit{Ref:} ``Looking for advice on managing diabetes and considering dietary changes.''
+\end{itemize}
+
+\noindent\textbf{Inputs appended to the prompt}\\
+Original: \texttt{"""\{raw\_prompt\}"""}\\
+Context (intent / domain): \texttt{\{domain\}} / \texttt{\{task\}}\\
+Essential information to keep: \texttt{\{e\_list\}} (or, when no sensitive essential exists, ``Essential (the task itself, must be preserved): \texttt{\{task\_brief\}}'')\\
+Information to remove or generalize: \texttt{\{ne\_list\}}\\
+Provide ONLY the reformulated text.
+}
+\end{promptbox}

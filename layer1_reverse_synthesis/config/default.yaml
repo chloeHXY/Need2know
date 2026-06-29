@@ -1,0 +1,160 @@
+# Layer 1 reverse synthesis -- default config.
+# Anything that doesn't fit your environment can be overridden by passing a
+# different YAML to scripts/run_synth.py via --config.
+#
+# NOTE on endpoints:
+# All LLM calls go through the in-house **Venus LLM proxy**:
+#     http://v2.open.venus.oa.com/llmproxy/chat/completions
+# The Bearer token is read from the env var ``ENV_VENUS_OPENAPI_SECRET_ID``
+# and the client automatically suffixes it with "@5325" (see
+# ``synth/llm_client.py`` and ``examples/formal.py``).
+#
+# Export the token before running:
+#     export ENV_VENUS_OPENAPI_SECRET_ID=<your venus openapi secret id>
+#
+# NOTE on token accounting:
+# At end-of-run, ``scripts/run_synth.py`` prints a per-endpoint usage table
+# (prompt/completion tokens, requests, USD cost) based on the ``usage``
+# field returned by the server and a built-in price table keyed by ``model``
+# (see ``DEFAULT_PRICES`` in ``synth/llm_client.py``; e.g. gpt-4o is
+# $5/$15 per 1M in/out tokens, claude-sonnet-4-6 is $3/$15).
+# If a model is missing / mispriced, you can override per endpoint::
+#     price_per_mtok_input:  3.0
+#     price_per_mtok_output: 15.0
+
+# ---------------------------------------------------------------------------
+# Generator: produces the original raw_prompt.
+# Keep at least 2 different models here for diversity. Primary is gpt-4o-mini.
+# ---------------------------------------------------------------------------
+
+generator:
+  max_retries: 5
+  retry_base_delay: 1.0
+  models:
+    # Primary generator: fast, cheap, strong instruction-following.
+    - name: claude-sonnet-4-6
+      model: claude-sonnet-4-6
+      provider: venus
+      base_url: http://v2.open.venus.oa.com/llmproxy/chat/completions
+      api_key_env: ENV_VENUS_OPENAPI_SECRET_ID
+      temperature: 0.95
+      max_tokens: 700
+      weight: 2.0
+
+    # # Secondary generator: different family -> different phrasing distribution.
+    # - name: deepseek-chat
+    #   model: deepseek-chat
+    #   provider: venus
+    #   base_url: http://v2.open.venus.oa.com/llmproxy/chat/completions
+    #   api_key_env: ENV_VENUS_OPENAPI_SECRET_ID
+    #   temperature: 0.95
+    #   max_tokens: 700
+    #   weight: 1.5
+    # # Tertiary generator: Chinese-native flavour for maximum linguistic diversity.
+    # - name: hunyuan-turbo
+    #   model: hunyuan-turbo
+    #   provider: venus
+    #   base_url: http://v2.open.venus.oa.com/llmproxy/chat/completions
+    #   api_key_env: ENV_VENUS_OPENAPI_SECRET_ID
+    #   temperature: 0.95
+    #   max_tokens: 700
+    #   weight: 1.0
+
+# ---------------------------------------------------------------------------
+# Reformulator: produces the gold reformulation. Quality here directly caps
+# training-data quality, so we spend on a strong instruction-follower and
+# keep temperature low to avoid hallucinating extra spec fields.
+# ---------------------------------------------------------------------------
+reformulator:
+  max_retries: 5
+  retry_base_delay: 1.0
+  models:
+    - name: gpt-4o
+      model: gpt-4o
+      provider: venus
+      base_url: http://v2.open.venus.oa.com/llmproxy/chat/completions
+      api_key_env: ENV_VENUS_OPENAPI_SECRET_ID
+      temperature: 0.2
+      max_tokens: 400
+      weight: 1.0
+
+# ---------------------------------------------------------------------------
+# Judge: independent E/NE detector. Uses a *different family* from the
+# generators (Anthropic vs OpenAI/DeepSeek/Hunyuan) to avoid same-source
+# bias where a model is lenient on prompts written in its own style.
+# ---------------------------------------------------------------------------
+judge:
+  max_retries: 5
+  retry_base_delay: 1.0
+  models:
+    - name: gpt-4o
+      model: gpt-4o
+      provider: venus
+      base_url: http://v2.open.venus.oa.com/llmproxy/chat/completions
+      api_key_env: ENV_VENUS_OPENAPI_SECRET_ID
+      temperature: 0.0
+      max_tokens: 800
+      weight: 1.0
+
+# ---------------------------------------------------------------------------
+# Spec sampling
+# ---------------------------------------------------------------------------
+sampling:
+  num_essential_min: 1
+  num_essential_max: 2
+  num_nonessential_min: 1
+  num_nonessential_max: 3
+  confusion_rate: 0.15
+
+  # Down-weight the hardest style (implicit) at the start of training; turn
+  # it up later. None / unset means uniform across enumerated values.
+  style_weights:
+    direct: 1.0
+    narrative: 1.5
+    implicit: 0.6
+    multi_sentence: 1.2
+
+  # Slightly favour self-disclosure (most common) but keep diversity.
+  subject_weights:
+    self: 2.0
+    family: 1.0
+    friend: 1.0
+    coworker: 0.7
+    third_party: 0.6
+
+  # No domain/task biasing by default -- uniform.
+  # Uncomment to reweight (e.g. focus on Health and Employment for an
+  # initial pilot).
+  # domain_weights:
+  #   Health_And_Wellness: 2.0
+  #   Employment_And_Applications: 2.0
+
+# ---------------------------------------------------------------------------
+# Pipeline-level controls
+# ---------------------------------------------------------------------------
+pipeline:
+  concurrency: 16
+  write_soft_fail: true
+  write_hard_fail: true
+  judge_use_json_mode: true   # set false for endpoints that don't support response_format
+  pass_threshold: 0.8
+  soft_fail_threshold: 0.5
+  max_generation_retries: 2
+  generator_temperature: null      # null => use endpoint default
+  reformulator_temperature: 0.2
+  judge_temperature: 0.0
+  matcher_token_threshold: 0.5
+  matcher_cosine_threshold: 0.65
+
+# ---------------------------------------------------------------------------
+# Embedding model -- used by the judge consistency-check matcher as a
+# semantic fallback. Optional. If "enabled: false" or this section is removed
+# the matcher uses token-overlap only (offline-friendly but lower recall).
+# ---------------------------------------------------------------------------
+embeddings:
+  enabled: false
+  model: text-embedding-3-small
+  base_url: https://api.openai.com/v1
+  api_key_env: OPENAI_API_KEY
+  batch_size: 64
+  timeout: 60.0

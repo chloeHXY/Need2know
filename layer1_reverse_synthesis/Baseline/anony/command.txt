@@ -1,0 +1,9 @@
+
+python /group/40047/eiraxyhuang/workspace/fc/DataG/layer1_reverse_synthesis/Baseline/anonymize_jsonl.py \
+    --input  /group/40047/eiraxyhuang/workspace/fc/DataG/layer1_reverse_synthesis/data/smoke_58.clean.jsonl \
+    --output /group/40047/eiraxyhuang/workspace/fc/DataG/layer1_reverse_synthesis/Baseline/anony/smoke_58.clean.anonymized.jsonl
+
+python /group/40047/eiraxyhuang/workspace/fc/DataG/layer1_reverse_synthesis/Baseline/anonymize_jsonl.py \
+    --input  /group/40047/eiraxyhuang/workspace/fc/DataG/layer1_reverse_synthesis/data/o1/syn_questions/med.jsonl \
+    --output /group/40047/eiraxyhuang/workspace/fc/DataG/layer1_reverse_synthesis/Baseline/anony/med.anonymized.jsonl \
+    --text-field Syn_Question
