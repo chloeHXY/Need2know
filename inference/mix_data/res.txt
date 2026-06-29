@@ -1,0 +1,14 @@
+[plan] evaluating 2000 rows; ability counts:
+ability
+privacy    1000
+Med         600
+wild        400
+Name: count, dtype: int64
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████| 2000/2000 [04:45<00:00,  7.00it/s]
+
+=== Result ===
+  [Med     ] count= 600  accuracy = 0.6667
+  [privacy ] count=1000  Q_AL avg = 0.9530
+  [wild    ] count= 400  Q_AL avg = 0.9325
+  [overall ] count=2000  avg      = 0.8630
+
