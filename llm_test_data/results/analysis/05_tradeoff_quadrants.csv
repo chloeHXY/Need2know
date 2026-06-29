@@ -1,0 +1,5 @@
+dataset,n_scored,high_util_high_risk,high_util_high_risk_pct,high_util_low_risk_(ideal),high_util_low_risk_pct,low_util_low_risk,low_util_low_risk_pct,low_util_high_risk_(worst),low_util_high_risk_pct
+ALL,1500,31,2.07,171,11.4,22,1.47,74,4.93
+our,500,2,0.4,56,11.2,6,1.2,18,3.6
+papillon,500,2,0.4,41,8.2,11,2.2,11,2.2
+prediax,500,27,5.4,74,14.8,5,1.0,45,9.0

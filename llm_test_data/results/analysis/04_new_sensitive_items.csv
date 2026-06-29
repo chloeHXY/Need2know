@@ -1,0 +1,131 @@
+dataset,category,span,reason,verdict,reid_risk,utility_score
+our,other,pet Chihuahua,The mention of the specific pet could introduce unnecessary sensitivity not present in the original question.,acceptable,0.3,0.7
+our,other,newborn with a bloated abdomen and less meconium passed shortly after birth,"This specific presentation is not a general symptom and can lead to identifying characteristics, especially in a medical context.",acceptable,0.3,0.7
+our,other,smokes half a pack a day,This detail about smoking frequency is not directly stated in the original question.,acceptable,0.3,0.7
+our,other,123456,Chart ID is sensitive information that is not mentioned in the priv_query.,acceptable,0.3,0.7
+our,other,mid-dilated unresponsive pupil,This specific clinical finding is not mentioned in the original question and could imply a particular diagnosis.,acceptable,0.3,0.7
+our,demographic/age/gender,50-year-old,"Age is not referenced in the priv_query, but it can be a sensitive detail that narrows the patient demographic.",acceptable,0.3,0.7
+our,contact/identifier,synthetic chart ID 12345,"This identifier is missing in the priv_query, and its absence reduces the specificity but does not eliminate the overall context.",acceptable,0.3,0.7
+our,other,going through a stressful time,This detail about stress is not explicitly mentioned in the original question but is inferred from the context of awaiting an asylum decision.,acceptable,0.6,0.7
+our,demographic/age/gender,75 years old,"The age detail is not directly mentioned in the priv_query, which could be relevant for understanding the user's perspective and potential vulnerabilities.",acceptable,0.3,0.7
+our,occupation/role,"$90,000 of student loans",This specific amount of debt is not directly mentioned in the original question as a standalone detail.,acceptable,0.3,0.7
+our,other,started taking Atorvastatin 20mg,This detail about medication is not mentioned in the priv_query and is a sensitive health-related information.,acceptable,0.6,0.7
+our,other,+1 (416) 616-8937,This phone number is not mentioned in the original intent and was not necessary for the query.,bad,0.6,0.4
+our,occupation/role,my employee ID on file since 24/07/2020,"This detail is not mentioned in the priv_query, which could lead to the exposure of sensitive information.",acceptable,0.0,0.7
+our,contact/identifier,linked to license QCM2MC17 for campus vehicle access,"This detail is also omitted in the priv_query, representing sensitive information that is not retained.",acceptable,0.0,0.7
+our,other,information on lupus,The request for information on lupus introduces a new sensitive detail not explicitly mentioned in the original question.,acceptable,0.3,0.7
+our,other,dispute with siblings,"This phrasing introduces a potential conflict without the necessary context of the specific distribution issues, which could imply sensitive familial relations.",acceptable,0.6,0.7
+our,demographic/age/gender,21-year-old non-binary person,"This specific age and gender identity detail is not explicitly requested in the original question, making it newly sensitive.",acceptable,0.6,0.7
+our,contact/identifier,my license number NP6PXVAP is sitting on a form I'm filling out nearby,This detail is not part of the original intent related to the poem and could be sensitive.,acceptable,0.0,1.0
+our,other,stress-eating biryani,This detail about stress-eating is not directly related to the translation task and could reveal personal habits.,acceptable,0.3,0.7
+our,other,missing my left arm below the elbow,This detail about a physical disability is not mentioned in the original question and introduces new sensitive information.,acceptable,0.3,0.7
+our,medical/health,breast cancer runs in my family,This detail about familial health issues is not present in the original question and introduces new sensitive information.,acceptable,0.3,0.7
+our,other,stressful few weeks,This detail about recent stress is not part of the original question and could reveal personal struggles.,acceptable,0.3,0.7
+our,contact/identifier,rileyng39@proton.me,This email address is not mentioned in the original question and introduces a new identifiable detail.,acceptable,0.3,0.7
+our,other,forgetting to take my Warfarin 5mg in the mornings,This detail about medication is sensitive and not necessary for the technical question.,acceptable,0.0,1.0
+our,other,chronic lower-back pain,"This detail is present in the original question but not mentioned in the priv_query, potentially leading to a loss of context regarding health anxieties.",acceptable,0.3,0.7
+our,other,finishing a course of amoxicillin 500mg three times daily,"This specific medication detail is not included in the priv_query, which could provide context about health concerns.",acceptable,0.3,0.7
+our,relationship/family,colleague confided her father has schizophrenia,This detail introduces a new sensitive topic that is not relevant to the original question but could imply additional context about health discussions.,acceptable,0.3,0.7
+our,other,anxious about health in general,"This emotional state is omitted, which could provide insight into the user's mindset and urgency.",acceptable,0.3,0.7
+our,other,DL is BZ174Z3V,This sensitive detail about a driver's license number is not relevant to the original question and introduces new risk.,acceptable,0.3,0.7
+our,contact/identifier,SSN is 666-18-7076,This sensitive detail about a social security number is not relevant to the original question and introduces new risk.,acceptable,0.3,0.7
+our,contact/identifier,avery.ng@yahoo.com,This specific email address is not mentioned in the original question but indicates personal contact information that should be anonymized.,acceptable,0.3,0.7
+our,contact/identifier,my email is alex.smith75@yahoo.com,This sensitive detail is not entailed by the question and could be used to identify the user.,acceptable,0.3,0.7
+our,contact/identifier,jamie.smith@outlook.com,The email address is a direct identifier not present in the priv_query.,acceptable,0.0,0.7
+our,location/place,sister's emotional state,"The emotional context of the sister doing well overall is not included, which could be sensitive information.",acceptable,0.6,0.7
+our,other,used to smoke but quit about three years ago,This detail about the colleague's past smoking habits is sensitive and not directly related to the code issue.,acceptable,0.0,0.7
+our,other,I live in Argentina,This detail is not entailed by the question as it does not directly relate to the task of earning money from niche communities.,acceptable,0.3,0.7
+our,other,neglect of duty and care,This detail is not present in the original question and may introduce new sensitive implications regarding the user's situation.,acceptable,0.3,0.7
+our,relationship/family,my family doesn't like this subject,This detail about family disapproval is not addressed in the priv_query.,acceptable,0.3,0.7
+our,other,difficult period of depression,"This specific phrasing introduces a new sensitive detail not explicitly stated in the original question, which may not fully capture the user's emotional depth.",acceptable,0.3,0.7
+our,other,"contact numbers: Vathsala 0768992196, Mrs Sathiyakeerthi 0766248922, Balakumar 0777331660",These contact numbers were not requested in the original question and could lead to direct identification.,acceptable,0.6,0.7
+our,other,Founder of Msitu Africa,This detail is not directly stated in the question but is sensitive information that could help identify the user.,acceptable,0.3,0.7
+our,other,doing this thesis in syria,The geographic location is not a necessary part of the request and could reveal personal context.,acceptable,0.0,1.0
+papillon,other,healthy appearance,This detail about the woman's appearance is not present in the original question and could imply an undesired focus on her physical state.,acceptable,0.3,0.7
+papillon,other,past smoker,"This detail is not explicitly stated in the original question, but it could be sensitive information regarding the patient's health history.",acceptable,0.3,0.7
+papillon,demographic/age/gender,40-year-old woman,"While age and gender are typical descriptors, they are not explicitly linked to the individual in the original question.",acceptable,0.3,0.7
+papillon,location/place,developing country,This term does not directly correlate with the specific country mentioned (Uganda) and may introduce ambiguity about the patient's travel history.,acceptable,0.6,0.7
+papillon,contact/identifier,synthetic chart ID 123456,"This specific identifier is not mentioned in the priv_query, making it a newly introduced sensitive detail that is not entailed by the original question.",acceptable,0.3,0.7
+papillon,other,history of hypertension and diabetes,This detail is not explicitly stated in the question and could lead to potential discrimination or stigma.,acceptable,0.3,0.7
+papillon,other,miss eating khachapuri,This detail about missing a specific food is not related to the core question and could be seen as a personal sentiment.,acceptable,0.3,0.7
+papillon,other,significant amount of money,"The phrase 'significant amount of money' does not specify the inheritance amount of $250,000, which is crucial context in the original question.",acceptable,0.6,0.7
+papillon,other,Atorvastatin 20mg,This specific medication detail is not necessary for the task and could be sensitive.,acceptable,0.6,0.7
+papillon,other,+1 (346) 842-1221,This sensitive detail is not entailed by the question as it was not necessary for the task of creating a Python tutor prompt.,acceptable,0.0,0.7
+papillon,medical/health,long illness,This detail is not explicitly stated in the original question and may introduce new implications about the nature of the loss.,acceptable,0.3,0.7
+papillon,financial,"financial review meeting coming up next March, dealing with $40,000 in credit-card debt",These details about the user's financial situation are not present in the priv_query and could be sensitive.,acceptable,0.0,0.7
+papillon,other,+1 (416) 616-8937,The phone number is a new sensitive detail that is not implied by the original question.,acceptable,0.6,0.7
+papillon,other,facing a misdemeanor charge,This sensitive detail is not entailed by the original question's focus on health challenges and medication.,acceptable,0.3,0.7
+papillon,medical/health,coworker on Sertraline 50mg for anxiety,"This detail introduces a new character and context not mentioned in the original question, which could narrow the user down.",acceptable,0.3,0.7
+papillon,contact/identifier,my license number NP6PXVAP,This detail is not relevant to the poem and could be sensitive information that was not needed in the context.,acceptable,0.3,0.7
+papillon,other,dealing with the stress of facing a misdemeanor charge,"This detail about a misdemeanor charge is sensitive and was omitted in the priv_query, but it is not directly related to the abstract or the request for a summary.",acceptable,0.0,0.7
+papillon,contact/identifier,rileyng39@proton.me,"The email address was not part of the original question's request but is included in the priv_query, adding a sensitive detail.",acceptable,0.3,0.7
+papillon,other,Warfarin 5mg,The mention of a specific medication is a sensitive detail not explicitly asked for in the original question.,acceptable,0.3,0.7
+papillon,other,travel insurance info,This detail is sensitive and was not directly mentioned in the original question.,acceptable,0.6,0.7
+papillon,other,high-stakes financial industry,"This detail is a generalization that is not directly mentioned in the original question, potentially adding unnecessary context.",acceptable,0.3,0.7
+papillon,relationship/family,my brother,The relationship detail is not present in the priv_query and could be sensitive.,acceptable,0.0,0.7
+papillon,medical/health,manages Crohn's disease,"This medical condition is omitted in the priv_query, which could be sensitive information.",acceptable,0.0,0.7
+papillon,other,barely making rent each month,"This financial situation is not reflected in the priv_query, which could also be sensitive.",acceptable,0.0,0.7
+papillon,other,+1 (854) 911-8567,This contact number is not a necessary detail for the task and exposes personal information.,acceptable,0.3,0.7
+papillon,other,specified size threshold,"This phrase is vague and does not correspond to the original specific size of 100 MB, which could lead to confusion.",acceptable,0.3,0.7
+papillon,other,mid-career professional,"This term is a vague generalization that does not reflect the specific age of the individual, which could lead to assumptions about their experience level.",acceptable,0.3,0.7
+papillon,contact/identifier,casey.garcia80@yahoo.com,This email address is not directly relevant to the question and introduces sensitive personal information.,acceptable,0.3,0.7
+papillon,other,chronic fatigue syndrome,"The priv_query does not address the individual's health condition, which is a sensitive detail not required for the task.",acceptable,0.3,0.7
+papillon,contact/identifier,her number is +1 (325) 343-5578,"This detail was mentioned in the original question but is omitted in the priv_query, indicating a potential privacy concern that could still be inferred.",acceptable,0.0,0.7
+papillon,other,high blood pressure,The mention of high blood pressure is sensitive information that is not explicitly linked to the individual in the priv_query.,acceptable,0.3,0.7
+papillon,other,personal growth and accomplishment,This detail about personal growth is not explicitly mentioned in the original question but is inferred from the context of the trip and the user's journey.,acceptable,0.6,0.7
+papillon,relationship/family,family-friendly and health-focused approach,This detail introduces a new angle that is not directly mentioned in the original question and could imply broader family dynamics.,acceptable,0.3,0.7
+papillon,other,2MUV9WBB,This driver's license number is sensitive personal information that is not relevant to the query about managing a peanut allergy.,acceptable,0.6,0.7
+papillon,contact/identifier,averylee74@proton.me,This email address is sensitive contact information that is not necessary for the context of the query.,acceptable,0.6,0.7
+papillon,other,"live in Tsim Sha Tsui, Hong Kong",The specific location is sensitive information that is not necessary for the task of correcting the cover letter.,acceptable,0.3,0.7
+papillon,other,only exercise about 3 hours a week,This personal lifestyle detail is not relevant to the task and adds unnecessary sensitive information.,acceptable,0.3,0.7
+papillon,other,follow a paleo diet,"This dietary preference is personal and unrelated to the task, introducing new sensitive information.",acceptable,0.3,0.7
+papillon,other,stressed,The emotional state of the user is sensitive and not relevant to the task at hand.,acceptable,0.3,0.7
+papillon,other,member of a union,This detail about union membership is not provided in the original question.,acceptable,0.3,0.7
+papillon,other,very unreliable,This detail is not explicitly stated in the question and may not be a universally applicable descriptor.,acceptable,0.3,0.7
+papillon,other,A user has access to multiple niche online communities,This phrase implies a level of engagement and potential identity that was not explicitly stated in the original question.,acceptable,0.3,0.7
+papillon,other,put on academic probation,This detail is not directly entailed by the original question and adds a layer of sensitive information.,acceptable,0.3,0.7
+papillon,organization/company,recent college graduate,This term does not specifically relate to the user's situation as they are still a student and not yet graduated.,acceptable,0.3,0.7
+papillon,other,I'm a senior,This detail about being a senior is not included in the priv_query and could help identify the student.,acceptable,0.3,0.7
+papillon,organization/company,unable to go on leave due to various personal and company issues,This detail about personal and company issues is not entailed in the original question and could be sensitive.,acceptable,0.6,0.7
+papillon,relationship/family,family friend,The term 'family friend' is too vague and does not capture the negative influence and manipulation described in the original question.,acceptable,0.3,0.7
+papillon,other,love in bahrain,The location 'Bahrain' is a sensitive detail that was omitted in the priv_query.,acceptable,0.3,0.7
+papillon,date/time-specific,"August 2nd, 2010","The specific date of Mei's death is not mentioned in the priv_query, which could be sensitive context.",acceptable,0.3,0.7
+papillon,other,Storm Dragon God,"This nickname is not directly mentioned in the original question, making it a newly introduced sensitive detail.",acceptable,0.3,0.7
+papillon,other,McAngel Kugl,"The name is omitted in the priv_query, but it is a specific identifier that could be sensitive.",acceptable,0.3,0.7
+papillon,medical/health,chronic illness,This detail is not explicitly mentioned in the original question and can introduce ambiguity.,acceptable,0.3,0.7
+papillon,other,a child expresses frustration and sadness,"While frustration and sadness are common emotions, this phrasing adds a layer of emotional sensitivity not explicitly stated in the original question.",acceptable,0.6,0.7
+prediax,other,<US_DRIVER_LICENSE>,This sensitive detail is introduced and not present in the original question.,acceptable,0.3,0.7
+prediax,demographic/age/gender,male with synthetic chart ID <US_DRIVER_LICENSE>,The substitution of 'synthetic chart ID' with '<US_DRIVER_LICENSE>' introduces a new sensitive detail not present in the original question.,acceptable,0.3,0.7
+prediax,other,<DATE_TIME>,This placeholder does not represent any specific information from the original question but may introduce ambiguity.,acceptable,0.6,0.7
+prediax,other,awaiting an asylum decision,This detail introduces a sensitive context not directly related to the original question about joint pain.,acceptable,0.3,0.7
+prediax,other,occasional cigar smoker,"This detail may not have been relevant to the original request, and its inclusion could introduce unintended personal details.",acceptable,0.3,0.7
+prediax,location/place,<LOCATION>,This detail is introduced without basis in the original question and could lead to additional identification risks.,acceptable,0.3,0.7
+prediax,other,<PERSON>,This detail is introduced without basis in the original question and could lead to additional identification risks.,acceptable,0.3,0.7
+prediax,location/place,<LOCATION>,"The placeholder for the location does not appear in the original question, potentially introducing new sensitive information.",acceptable,0.3,0.7
+prediax,other,<PERSON>,The placeholder <PERSON> does not reflect the original content and may introduce ambiguity regarding sensitive identity.,acceptable,0.3,0.7
+prediax,other,Atorvastatin 20mg,The specific mention of a medication is sensitive information not directly entailed by the original question.,acceptable,0.6,0.7
+prediax,other,Prozac 20mg,This specific medication detail is not implied in the original question.,acceptable,0.3,0.7
+prediax,other,<PHONE_NUMBER>,"The phone number is directly replaced but still indicates the presence of sensitive contact information, which is not directly stated in the original question.",acceptable,0.6,0.7
+prediax,other,self-drive road trips and true-crime documentaries,This detail about personal interests is not directly related to the original question and could be sensitive.,acceptable,0.3,0.7
+prediax,other,<PERSON>,"This placeholder does not reflect the original specific name (Daisy), which could be relevant to the user's identity.",acceptable,0.6,0.7
+prediax,other,burnout-related insomnia,"While mentioned in the question, the specific health condition could be considered sensitive and is not explicitly stated in the priv_query.",acceptable,0.3,0.7
+prediax,other,<EMAIL_ADDRESS>,The placeholder does not represent sensitive information entailed in the original question.,acceptable,0.6,0.7
+prediax,other,<PERSON>,The mention of a friend's name as a placeholder introduces new sensitive information that wasn't present in the original question.,acceptable,0.3,0.7
+prediax,other,+1 <PHONE_NUMBER>,The phone number is normalized but still indicates the user might be identifiable.,acceptable,0.6,0.7
+prediax,other,on Sertraline 50mg,The mention of medication is a new sensitive detail not directly asked about in the question.,acceptable,0.6,0.7
+prediax,other,<NRP>,This term is introduced without context and could imply sensitive information regarding the lease type.,acceptable,0.6,0.7
+prediax,other,<EMAIL_ADDRESS>,"The original email address is replaced with a placeholder, but the context of contacting a doctor remains sensitive.",acceptable,0.3,0.7
+prediax,contact/identifier,his license number is A5XVYGAY,"This detail is sensitive and not entailed by the original question, as the license number does not contribute to the roleplay scenario.",acceptable,0.6,0.7
+prediax,other,single after a <DATE_TIME>-long marriage,This detail about relationship status and duration is not necessary for the question and adds personal context.,acceptable,0.3,0.7
+prediax,other,keeping herself busy with <DATE_TIME> of exercise a week,This detail about exercise is not relevant to the query and introduces personal lifestyle information.,acceptable,0.3,0.7
+prediax,location/place,<LOCATION>,This is a placeholder that does not correspond to any specific detail in the original question and may mislead about the user's actual location.,acceptable,0.3,0.7
+prediax,other,I wish I was dead,This phrase indicates extreme emotional distress and was not explicitly mentioned in the original question as a sensitive detail.,acceptable,0.3,0.7
+prediax,relationship/family,my wife undergoing treatment from a gynecologist,This detail about the wife's medical treatment is sensitive and not explicitly mentioned in the original question.,acceptable,0.3,0.4
+prediax,other,multiple scars on her wrists and forearms,This detail about self-harm is sensitive and not directly mentioned in the original question.,acceptable,0.6,0.7
+prediax,other,Vathsala <PHONE_NUMBER>,The placeholder for Vathsala's phone number is not entailed by the question since it should have been anonymized.,acceptable,0.6,0.7
+prediax,other,<PERSON> <PHONE_NUMBER>,The placeholder for Mrs Sathiyakeerthi's phone number is not entailed by the question since it should have been anonymized.,acceptable,0.6,0.7
+prediax,location/place,<LOCATION>,The placeholder for Balakumar's location is not entailed by the question since it should have been anonymized.,acceptable,0.6,0.7
+prediax,other,<PHONE_NUMBER>,The placeholder for Balakumar's phone number is not entailed by the question since it should have been anonymized.,acceptable,0.6,0.7
+prediax,other,first ultrasound,This detail about a medical procedure is sensitive and was not explicitly present in the original question.,acceptable,0.6,0.7
+prediax,demographic/age/gender,little girl,The mention of the expected gender of the child is a new sensitive detail not directly stated in the original question.,acceptable,0.6,0.7
+prediax,location/place,<LOCATION>,This detail is not mentioned in the original question and could imply a specific place related to the individuals.,acceptable,0.6,0.7

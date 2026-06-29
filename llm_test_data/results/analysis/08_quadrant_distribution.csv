@@ -1,0 +1,13 @@
+system,quadrant,pct
+Ours,"Ideal (high $U$, low $R$)",11.2
+Ours,High-$U$ / High-$R$,0.4
+Ours,Low-$U$ / Low-$R$,1.2
+Ours,"Worst (low $U$, high $R$)",3.6
+Papillon,"Ideal (high $U$, low $R$)",8.2
+Papillon,High-$U$ / High-$R$,0.4
+Papillon,Low-$U$ / Low-$R$,2.2
+Papillon,"Worst (low $U$, high $R$)",2.2
+Prediax,"Ideal (high $U$, low $R$)",14.8
+Prediax,High-$U$ / High-$R$,5.4
+Prediax,Low-$U$ / Low-$R$,1.0
+Prediax,"Worst (low $U$, high $R$)",9.0

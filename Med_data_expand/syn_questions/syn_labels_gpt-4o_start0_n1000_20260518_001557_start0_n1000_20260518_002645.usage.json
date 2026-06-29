@@ -1,0 +1,21 @@
+{
+  "model": "gpt-4o",
+  "provider": "venus",
+  "input": "/group/40047/eiraxyhuang/workspace/fc/DataG/Med_data_expand/labels/labels_gpt-4o_start0_n1000_20260518_001557.jsonl",
+  "output": "/group/40047/eiraxyhuang/workspace/fc/DataG/Med_data_expand/syn_questions/syn_labels_gpt-4o_start0_n1000_20260518_001557_start0_n1000_20260518_002645.jsonl",
+  "n_requested": 1000,
+  "n_ok": 1000,
+  "n_fail": 0,
+  "elapsed_seconds": 249.48,
+  "usage": {
+    "gpt-4o": {
+      "model": "gpt-4o",
+      "prompt_tokens": 621476,
+      "completion_tokens": 140128,
+      "requests": 1000,
+      "cost_usd": 5.209300000000003,
+      "price_in": 5.0,
+      "price_out": 15.0
+    }
+  }
+}

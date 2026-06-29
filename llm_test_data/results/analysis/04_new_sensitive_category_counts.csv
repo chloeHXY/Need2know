@@ -1,0 +1,11 @@
+category,count,pct_of_items
+other,85,65.38
+contact/identifier,15,11.54
+location/place,7,5.38
+demographic/age/gender,6,4.62
+relationship/family,6,4.62
+medical/health,5,3.85
+occupation/role,2,1.54
+organization/company,2,1.54
+financial,1,0.77
+date/time-specific,1,0.77
